@@ -37,5 +37,6 @@ Right now, the camera is controlled using WASD, plus Q and E for vertical moveme
 Add cube rotation and a static camera.  
 Add GUI features.  
 Speed optimizations !!!!!  
+Dynamic resolution scaling (for the density display)  
 
 ![The image is in the images folder](https://github.com/ethanlipson/DensityMap/raw/master/images/sphere.png "Sphere demo")
