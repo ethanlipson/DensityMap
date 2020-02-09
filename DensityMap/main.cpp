@@ -186,7 +186,7 @@ int main() {
 		glm::dmat4 camView = cam.getViewMatrix();
 		
 		int dim = grid.getDim();
-		glm::dmat4 model = glm::scale(glm::dmat4{}, glm::dvec3(10.0 / (dim - 1), 10.0 / (dim - 1), 10.0 / (dim - 1)));
+		glm::dmat4 model = glm::scale(glm::dmat4(1.0), glm::dvec3(10.0 / (dim - 1), 10.0 / (dim - 1), 10.0 / (dim - 1)));
 		model = glm::translate(model, glm::dvec3(-(dim - 1) / 2.0, -(dim - 1) / 2.0, -(dim - 1) / 2.0));
 		
 		// Drawing the volume map
