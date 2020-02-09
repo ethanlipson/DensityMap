@@ -12,7 +12,7 @@ The 3D array containing the density at each position, consisting of unsigned byt
 <b>DensityMap(int dim)</b>  
 Initializes the DensityMap with a cubic array of side length dim.
 
-<b>void addLine(glm::vec3 p1, glm::vec3 p2, std::vector&lt;float&gt; vals)</b>  
+<b>void addLine(glm::vec3 p1, glm::vec3 p2, std::vector&lt;unsigned char&gt; vals)</b>  
 Adds a line of data to the array along the line segment defined by p1 and p2.
 The more values there are in vals, the smoother the line will be.
 
