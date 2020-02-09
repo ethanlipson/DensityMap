@@ -32,10 +32,10 @@ Returns the side length of the cube.
 
 Right now, the camera is controlled using WASD, plus Q and E for vertical movement. This will be changed to a stationary camera with a rotating display in the future.
 
-## TODO
+## To Do
 
 Add cube rotation and a static camera.  
 Add GUI features.  
 Speed optimizations !!!!!  
 
-[The image is in the images folder](https://github.com/ethanlipson/DensityMap/raw/master/images/sphere.png "Sphere demo")
+![The image is in the images folder](https://github.com/ethanlipson/DensityMap/raw/master/images/sphere.png "Sphere demo")
