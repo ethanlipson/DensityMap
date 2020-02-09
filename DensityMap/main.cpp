@@ -44,6 +44,10 @@ int main() {
 	// Window title
 	std::string windowTitle = "Density Map";
 
+	// Variables for measuring FPS
+	int numFrames = 0;
+	double lastFPSUpdate = 0;
+
 	// Initializing the OpenGL context
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -212,6 +216,17 @@ int main() {
 		// Update the screen
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+
+		// Measuring FPS
+		if (glfwGetTime() - lastFPSUpdate >= 1) {
+			std::string newTitle = windowTitle + " (" + std::to_string(numFrames) + " FPS)";
+			glfwSetWindowTitle(window, newTitle.c_str());
+
+			lastFPSUpdate = glfwGetTime();
+			numFrames = 0;
+		}
+
+		numFrames++;
 	}
 
 	// GLFW cleanup
