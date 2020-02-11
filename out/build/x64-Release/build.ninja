@@ -103,7 +103,7 @@ build DensityMap.exe: CXX_EXECUTABLE_LINKER__DensityMap CMakeFiles\DensityMap.di
 # Utility command for install/local
 
 build CMakeFiles\install\local.util: CUSTOM_COMMAND all
-  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\OneDrive\cpp\programs\DensityMap\out\build\x64-Release && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\Onedrove\cpp\programs\DensityMap\out\build\x64-Release && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -115,7 +115,7 @@ build install\local: phony CMakeFiles\install\local.util
 # Utility command for install
 
 build CMakeFiles\install.util: CUSTOM_COMMAND all
-  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\OneDrive\cpp\programs\DensityMap\out\build\x64-Release && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\Onedrove\cpp\programs\DensityMap\out\build\x64-Release && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -127,7 +127,7 @@ build install: phony CMakeFiles\install.util
 # Utility command for edit_cache
 
 build CMakeFiles\edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\OneDrive\cpp\programs\DensityMap\out\build\x64-Release && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E echo "No interactive CMake dialog available.""
+  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\Onedrove\cpp\programs\DensityMap\out\build\x64-Release && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E echo "No interactive CMake dialog available.""
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -138,7 +138,7 @@ build edit_cache: phony CMakeFiles\edit_cache.util
 # Utility command for rebuild_cache
 
 build CMakeFiles\rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\OneDrive\cpp\programs\DensityMap\out\build\x64-Release && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:\Users\Ethan\OneDrive\cpp\programs\DensityMap -BC:\Users\Ethan\OneDrive\cpp\programs\DensityMap\out\build\x64-Release"
+  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\Onedrove\cpp\programs\DensityMap\out\build\x64-Release && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:\Users\Ethan\Onedrove\cpp\programs\DensityMap -BC:\Users\Ethan\Onedrove\cpp\programs\DensityMap\out\build\x64-Release"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -153,7 +153,7 @@ build list_install_components: phony
 
 # =============================================================================
 # Write statements declared in CMakeLists.txt:
-# C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/CMakeLists.txt
+# C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/CMakeLists.txt
 # =============================================================================
 
 
@@ -167,7 +167,7 @@ build Dependencies\glfw\uninstall: phony Dependencies\glfw\CMakeFiles\uninstall
 # Utility command for install/local
 
 build Dependencies\glfw\CMakeFiles\install\local.util: CUSTOM_COMMAND Dependencies\glfw\all
-  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\OneDrive\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\Onedrove\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -179,7 +179,7 @@ build Dependencies\glfw\install\local: phony Dependencies\glfw\CMakeFiles\instal
 # Utility command for install
 
 build Dependencies\glfw\CMakeFiles\install.util: CUSTOM_COMMAND Dependencies\glfw\all
-  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\OneDrive\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\Onedrove\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -191,7 +191,7 @@ build Dependencies\glfw\install: phony Dependencies\glfw\CMakeFiles\install.util
 # Utility command for edit_cache
 
 build Dependencies\glfw\CMakeFiles\edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\OneDrive\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E echo "No interactive CMake dialog available.""
+  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\Onedrove\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E echo "No interactive CMake dialog available.""
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -202,7 +202,7 @@ build Dependencies\glfw\edit_cache: phony Dependencies\glfw\CMakeFiles\edit_cach
 # Utility command for rebuild_cache
 
 build Dependencies\glfw\CMakeFiles\rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\OneDrive\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:\Users\Ethan\OneDrive\cpp\programs\DensityMap -BC:\Users\Ethan\OneDrive\cpp\programs\DensityMap\out\build\x64-Release"
+  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\Onedrove\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:\Users\Ethan\Onedrove\cpp\programs\DensityMap -BC:\Users\Ethan\Onedrove\cpp\programs\DensityMap\out\build\x64-Release"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -220,11 +220,11 @@ build Dependencies\glfw\list_install_components: phony
 # Custom command for Dependencies\glfw\CMakeFiles\uninstall
 
 build Dependencies\glfw\CMakeFiles\uninstall: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\OneDrive\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -P C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw/cmake_uninstall.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\Onedrove\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -P C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw/cmake_uninstall.cmake"
 
 # =============================================================================
 # Write statements declared in CMakeLists.txt:
-# C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/Dependencies/glfw/CMakeLists.txt
+# C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/Dependencies/glfw/CMakeLists.txt
 # =============================================================================
 
 
@@ -232,7 +232,7 @@ build Dependencies\glfw\CMakeFiles\uninstall: CUSTOM_COMMAND
 # Utility command for rebuild_cache
 
 build Dependencies\glfw\src\CMakeFiles\rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\OneDrive\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw\src && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:\Users\Ethan\OneDrive\cpp\programs\DensityMap -BC:\Users\Ethan\OneDrive\cpp\programs\DensityMap\out\build\x64-Release"
+  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\Onedrove\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw\src && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:\Users\Ethan\Onedrove\cpp\programs\DensityMap -BC:\Users\Ethan\Onedrove\cpp\programs\DensityMap\out\build\x64-Release"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -406,7 +406,7 @@ build Dependencies\glfw\src\glfw3.lib: C_STATIC_LIBRARY_LINKER__glfw Dependencie
 # Utility command for install/local
 
 build Dependencies\glfw\src\CMakeFiles\install\local.util: CUSTOM_COMMAND Dependencies\glfw\src\all
-  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\OneDrive\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw\src && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\Onedrove\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw\src && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -418,7 +418,7 @@ build Dependencies\glfw\src\install\local: phony Dependencies\glfw\src\CMakeFile
 # Utility command for install
 
 build Dependencies\glfw\src\CMakeFiles\install.util: CUSTOM_COMMAND Dependencies\glfw\src\all
-  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\OneDrive\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw\src && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\Onedrove\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw\src && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -430,7 +430,7 @@ build Dependencies\glfw\src\install: phony Dependencies\glfw\src\CMakeFiles\inst
 # Utility command for edit_cache
 
 build Dependencies\glfw\src\CMakeFiles\edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\OneDrive\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw\src && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E echo "No interactive CMake dialog available.""
+  COMMAND = cmd.exe /C "cd /D C:\Users\Ethan\Onedrove\cpp\programs\DensityMap\out\build\x64-Release\Dependencies\glfw\src && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E echo "No interactive CMake dialog available.""
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -459,14 +459,14 @@ build uninstall: phony Dependencies\glfw\uninstall
 # =============================================================================
 
 #############################################
-# Folder: C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw
+# Folder: C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw
 
 build Dependencies\glfw\all: phony Dependencies\glfw\src\all
 
 # =============================================================================
 
 #############################################
-# Folder: C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw/src
+# Folder: C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw/src
 
 build Dependencies\glfw\src\all: phony glfw
 

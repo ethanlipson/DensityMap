@@ -98,7 +98,7 @@ int main() {
 	firstMouse = true;
 
 	// Creating the density map
-	int dim = 101;
+	int dim = 21;
 	DensityMap grid(dim);
 	
 	// (Optional) Adds a sphere to the center of the density map
@@ -284,6 +284,8 @@ void sphereDemo(DensityMap& grid) {
 
 	int dim = grid.getDim();
 
+	float radius = 0.3;
+
 	for (int i = 0; i < dim; i++) {
 		for (int j = 0; j < dim; j++) {
 			for (int k = 0; k < dim; k++) {
@@ -300,7 +302,9 @@ void sphereDemo(DensityMap& grid) {
 				float shade = (maxDistance - distance) / maxDistance;
 				shade = shade * shade;
 
-				grid.cells[i][j][k] = static_cast<unsigned char>(shade * 255);
+				if (distance < radius * dim) {
+					grid.cells[i][j][k] = static_cast<unsigned char>(shade * 255);
+				}
 			}
 		}
 	}

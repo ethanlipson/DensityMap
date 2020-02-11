@@ -23,7 +23,7 @@
 				}
 			],
 			"type" : "STRING",
-			"value" : "Debug"
+			"value" : "RelWithDebInfo"
 		},
 		{
 			"name" : "CMAKE_CACHEFILE_DIR",
@@ -35,7 +35,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "c:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/build/x64-Debug"
+			"value" : "c:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/build/x64-Release"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -113,6 +113,10 @@
 			"name" : "CMAKE_CXX_COMPILER",
 			"properties" : 
 			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
 				{
 					"name" : "HELPSTRING",
 					"value" : "No help, variable specified on the command line."
@@ -519,7 +523,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap"
+			"value" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap"
 		},
 		{
 			"name" : "CMAKE_INSTALL_BINDIR",
@@ -723,7 +727,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/install/x64-Debug"
+			"value" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/install/x64-Release"
 		},
 		{
 			"name" : "CMAKE_INSTALL_RUNSTATEDIR",
@@ -1032,6 +1036,34 @@
 			],
 			"type" : "STATIC",
 			"value" : ""
+		},
+		{
+			"name" : "CMAKE_RC_COMPILER",
+			"properties" : 
+			[
+				{
+					"name" : "ADVANCED",
+					"value" : "1"
+				},
+				{
+					"name" : "HELPSTRING",
+					"value" : "RC compiler"
+				}
+			],
+			"type" : "FILEPATH",
+			"value" : "C:/Program Files (x86)/Windows Kits/10/bin/10.0.18362.0/x64/rc.exe"
+		},
+		{
+			"name" : "CMAKE_RC_COMPILER_WORKS",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : ""
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "1"
 		},
 		{
 			"name" : "CMAKE_RC_FLAGS",
@@ -1343,7 +1375,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/build/x64-Debug"
+			"value" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/build/x64-Release"
 		},
 		{
 			"name" : "DensityMap_SOURCE_DIR",
@@ -1355,7 +1387,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap"
+			"value" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap"
 		},
 		{
 			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_OpenGL",
@@ -1391,7 +1423,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/build/x64-Debug/Dependencies/glfw"
+			"value" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw"
 		},
 		{
 			"name" : "GLFW_BUILD_DOCS",
@@ -1451,7 +1483,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/Dependencies/glfw"
+			"value" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/Dependencies/glfw"
 		},
 		{
 			"name" : "GLFW_USE_HYBRID_HPG",
@@ -1643,7 +1675,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/install/x64-Debug"
+			"value" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/install/x64-Release"
 		}
 	],
 	"kind" : "cache",
