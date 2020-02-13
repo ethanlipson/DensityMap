@@ -109,6 +109,7 @@ int main() {
 		// Draw the density map and the surrounding cube
 		grid.draw(projection, camView, model);
 
+		// Used to make camera move speed consistent
 		cam.prevPos = cam.position;
 
 		// Update the screen
@@ -124,6 +125,7 @@ int main() {
 			numFrames = 0;
 		}
 
+		// Increment the number of frames in the past second
 		numFrames++;
 	}
 
