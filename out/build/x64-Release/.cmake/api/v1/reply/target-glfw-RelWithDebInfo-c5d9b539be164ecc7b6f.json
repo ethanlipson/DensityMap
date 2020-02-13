@@ -129,27 +129,27 @@
 			[
 				{
 					"backtrace" : 4,
-					"path" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/Dependencies/glad"
+					"path" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/Dependencies/glad"
 				},
 				{
 					"backtrace" : 5,
-					"path" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/Dependencies/glad/include"
+					"path" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/Dependencies/glad/include"
 				},
 				{
 					"backtrace" : 6,
-					"path" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/Dependencies/glm"
+					"path" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/Dependencies/glm"
 				},
 				{
 					"backtrace" : 7,
-					"path" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/Dependencies/glfw/include"
+					"path" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/Dependencies/glfw/include"
 				},
 				{
 					"backtrace" : 8,
-					"path" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/Dependencies/glfw/src"
+					"path" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/Dependencies/glfw/src"
 				},
 				{
 					"backtrace" : 8,
-					"path" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw/src"
+					"path" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw/src"
 				}
 			],
 			"language" : "C",
@@ -189,7 +189,7 @@
 		],
 		"prefix" : 
 		{
-			"path" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/install/x64-Release"
+			"path" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/install/x64-Release"
 		}
 	},
 	"name" : "glfw",

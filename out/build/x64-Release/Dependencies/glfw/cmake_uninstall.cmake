@@ -1,9 +1,9 @@
 
-if (NOT EXISTS "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw/install_manifest.txt")
-  message(FATAL_ERROR "Cannot find install manifest: \"C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw/install_manifest.txt\"")
+if (NOT EXISTS "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw/install_manifest.txt")
+  message(FATAL_ERROR "Cannot find install manifest: \"C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw/install_manifest.txt\"")
 endif()
 
-file(READ "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw/install_manifest.txt" files)
+file(READ "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw/install_manifest.txt" files)
 string(REGEX REPLACE "\n" ";" files "${files}")
 
 foreach (file ${files})

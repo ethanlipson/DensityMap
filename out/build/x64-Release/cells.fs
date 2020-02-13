@@ -7,6 +7,10 @@ out vec4 FragColor;
 in float fShade;
 
 void main() {
+	if (fShade == 0.0) {
+		discard;
+	}
+	
 	float shade = fShade * fShade * fShade * fShade * fShade;
     shade = clamp(shade, 0.0025, 1.0);
     FragColor = vec4(1.0, 1.0, 1.0, shade);

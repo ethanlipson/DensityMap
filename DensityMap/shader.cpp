@@ -1,26 +1,39 @@
 #include "shader.h"
 
-Shader::Shader(const GLchar* vertexPath, const GLchar* fragmentPath) {
-	std::string vertexCode;
-	std::string fragmentCode;
-	std::ifstream vShaderFile;
-	std::ifstream fShaderFile;
+Shader::Shader() {
+	ID = -1;
+}
 
-	vShaderFile.open(vertexPath);
-	fShaderFile.open(fragmentPath);
-	std::stringstream vShaderStream, fShaderStream;
+Shader::Shader(const GLchar* vert, const GLchar* frag, bool filepaths) {
+	const char* vShaderCode;
+	const char* fShaderCode;
 
-	vShaderStream << vShaderFile.rdbuf();
-	fShaderStream << fShaderFile.rdbuf();
+	if (filepaths) {
+		std::string vertexCode;
+		std::string fragmentCode;
+		std::ifstream vShaderFile;
+		std::ifstream fShaderFile;
 
-	vShaderFile.close();
-	fShaderFile.close();
+		vShaderFile.open(vert);
+		fShaderFile.open(frag);
+		std::stringstream vShaderStream, fShaderStream;
 
-	vertexCode = vShaderStream.str();
-	fragmentCode = fShaderStream.str();
+		vShaderStream << vShaderFile.rdbuf();
+		fShaderStream << fShaderFile.rdbuf();
 
-	const char* vShaderCode = vertexCode.c_str();
-	const char* fShaderCode = fragmentCode.c_str();
+		vShaderFile.close();
+		fShaderFile.close();
+
+		vertexCode = vShaderStream.str();
+		fragmentCode = fShaderStream.str();
+
+		vShaderCode = vertexCode.c_str();
+		fShaderCode = fragmentCode.c_str();
+	}
+	else {
+		vShaderCode = vert;
+		fShaderCode = frag;
+	}
 
 	// compiling the shaders
 

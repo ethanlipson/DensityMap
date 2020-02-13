@@ -26,9 +26,3 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(${PROJECT_SOURCE_DIR}/Dependencies/glfw)
 
 target_link_libraries(DensityMap PRIVATE glfw)
-
-###################### SHADERS ######################
-configure_file(${PROJECT_SOURCE_DIR}/DensityMap/cells.vs ${PROJECT_BINARY_DIR}/cells.vs COPYONLY)
-configure_file(${PROJECT_SOURCE_DIR}/DensityMap/cells.fs ${PROJECT_BINARY_DIR}/cells.fs COPYONLY)
-configure_file(${PROJECT_SOURCE_DIR}/DensityMap/lines.vs ${PROJECT_BINARY_DIR}/lines.vs COPYONLY)
-configure_file(${PROJECT_SOURCE_DIR}/DensityMap/lines.fs ${PROJECT_BINARY_DIR}/lines.fs COPYONLY)

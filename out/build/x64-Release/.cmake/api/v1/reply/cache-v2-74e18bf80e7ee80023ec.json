@@ -35,7 +35,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "c:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/build/x64-Release"
+			"value" : "c:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/build/x64-Release"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -523,7 +523,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap"
+			"value" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap"
 		},
 		{
 			"name" : "CMAKE_INSTALL_BINDIR",
@@ -727,7 +727,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/install/x64-Release"
+			"value" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/install/x64-Release"
 		},
 		{
 			"name" : "CMAKE_INSTALL_RUNSTATEDIR",
@@ -1375,7 +1375,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/build/x64-Release"
+			"value" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/build/x64-Release"
 		},
 		{
 			"name" : "DensityMap_SOURCE_DIR",
@@ -1387,7 +1387,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap"
+			"value" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap"
 		},
 		{
 			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_OpenGL",
@@ -1423,7 +1423,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw"
+			"value" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/build/x64-Release/Dependencies/glfw"
 		},
 		{
 			"name" : "GLFW_BUILD_DOCS",
@@ -1483,7 +1483,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/Dependencies/glfw"
+			"value" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/Dependencies/glfw"
 		},
 		{
 			"name" : "GLFW_USE_HYBRID_HPG",
@@ -1675,7 +1675,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/Ethan/OneDrive/cpp/programs/DensityMap/out/install/x64-Release"
+			"value" : "C:/Users/Ethan/Onedrove/cpp/programs/DensityMap/out/install/x64-Release"
 		}
 	],
 	"kind" : "cache",
