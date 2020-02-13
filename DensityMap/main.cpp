@@ -81,7 +81,7 @@ int main() {
 	firstMouse = true;
 
 	// Creating the density map
-	int dim = 21;
+	int dim = 101;
 	DensityMap grid(dim);
 
 	sphereDemo(grid);
