@@ -28,6 +28,12 @@ Returns a vector containing the densities of each cell (used to display the dens
 <b>int getDim()</b>  
 Returns the side length of the cube.
 
+<b>void draw(glm::dmat4 projection, glm::dmat4 view, glm::dmat4 model)</b>  
+Draws the density map and a white box around it to the screen.
+
+<b>void updateVertexBuffer()</b>
+Writes the new densities to the grahpics card. This function should not be called too frequently, since it takes ~100 milliseconds to complete (the time taken increases with the size of the array).
+
 ## Movement
 
 Right now, the camera is controlled using WASD, plus Q and E for vertical movement. This will be changed to a stationary camera with a rotating display in the future.

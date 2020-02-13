@@ -22,10 +22,6 @@ private:
 	unsigned int lineVAO;
 	unsigned int lineVBO;
 
-	// Used by DensityMap::draw()
-	std::vector<float> getVertexPositions();
-	std::vector<unsigned char> getVertexDensities();
-
 	// Creating the shaders for the cells in the cube
 	// and for the lines of the border of the cube
 	Shader cellShader;
@@ -49,10 +45,14 @@ public:
 	// Draws to the screen and optionally clears the screen
 	void draw(glm::dmat4 projection, glm::dmat4 view, glm::dmat4 model);
 
+	// Used by DensityMap::draw()
+	std::vector<float> getVertexPositions();
+	std::vector<unsigned char> getVertexDensities();
+
 	// Updates the vertices on the graphics card
 	// -----
-	// This function is pretty slow right now (a few hundred milliseconds)
+	// This function is pretty slow right now (around 100 milliseconds)
 	// because it writes several megabytes of data at once to the graphics card,
-	// but it will be optimized soon
+	// so don't call it too frequently
 	void updateVertexBuffer();
 };
