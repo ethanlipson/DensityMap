@@ -87,6 +87,8 @@ int main() {
 	sphereDemo(grid);
 	grid.updateVertexBuffer();
 
+	grid.setThreshold(1);
+
 	// Main event loop
 	while (!glfwWindowShouldClose(window)) {
 		double currentFrame = glfwGetTime();

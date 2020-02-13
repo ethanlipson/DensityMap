@@ -34,6 +34,10 @@ Draws the density map and a white box around it to the screen.
 <b>void updateVertexBuffer()</b>  
 Writes the new densities to the grahpics card. This function should not be called too frequently, since it takes ~100 milliseconds to complete (the time taken increases with the size of the array).
 
+<b>void setThreshold(unsigned char value)</b>  
+<b>unsigned char getThreshold()</b>  
+These set and get the minimum threshold for drawing a cell of the density map. 0 means that everything is drawn, and 255 means that only the brightest values are drawn.
+
 ## Movement
 
 Right now, the camera is controlled using WASD, plus Q and E for vertical movement. This will be changed to a stationary camera with a rotating display in the future.

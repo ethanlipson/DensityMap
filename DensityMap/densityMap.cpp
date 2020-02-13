@@ -2,6 +2,7 @@
 
 DensityMap::DensityMap(int dim) {
 	this->dim = dim;
+	threshold = 0;
 
 	std::string vCells =
 		"// VERTEX SHADER											  \n"
@@ -31,8 +32,10 @@ DensityMap::DensityMap(int dim) {
 		"															 \n"
 		"in float fShade;											 \n"
 		"															 \n"
+		"uniform float threshold;									 \n"
+		"															 \n"
 		"void main() {												 \n"
-		"	if (fShade == 0.0) {									 \n"
+		"	if (fShade < threshold) {								 \n"
 		"		discard;											 \n"
 		"	}														 \n"
 		"															 \n"
@@ -337,6 +340,7 @@ void DensityMap::draw(glm::dmat4 projection, glm::dmat4 view, glm::dmat4 model) 
 	cellShader.setMat4("projection", projection);
 	cellShader.setMat4("view", view);
 	cellShader.setMat4("model", model);
+	cellShader.setFloat("threshold", float(threshold) / 255.0);
 
 	glBindVertexArray(cellVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 18 * dim * (dim - 1) * (dim - 1));
@@ -358,4 +362,12 @@ void DensityMap::updateVertexBuffer() {
 	// Writes the vertices to the vertex buffer on the graphics card
 	glBindBuffer(GL_ARRAY_BUFFER, cellDensityVBO);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, densities.size() * sizeof(unsigned char), densities.data());
+}
+
+void DensityMap::setThreshold(unsigned char value) {
+	threshold = value;
+}
+
+unsigned char DensityMap::getThreshold() {
+	return threshold;
 }

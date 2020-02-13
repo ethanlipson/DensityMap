@@ -22,6 +22,9 @@ private:
 	unsigned int lineVAO;
 	unsigned int lineVBO;
 
+	// Minimum value needed to draw a cell
+	unsigned char threshold;
+
 	// Creating the shaders for the cells in the cube
 	// and for the lines of the border of the cube
 	Shader cellShader;
@@ -48,6 +51,10 @@ public:
 	// Used by DensityMap::draw()
 	std::vector<float> getVertexPositions();
 	std::vector<unsigned char> getVertexDensities();
+
+	// Set and get the threshold for drawing a cell
+	void setThreshold(unsigned char value);
+	unsigned char getThreshold();
 
 	// Updates the vertices on the graphics card
 	// -----
