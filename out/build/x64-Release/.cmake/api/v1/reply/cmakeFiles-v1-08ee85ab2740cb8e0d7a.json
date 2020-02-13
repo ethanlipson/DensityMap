@@ -136,18 +136,6 @@
 			"path" : "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.15/Modules/FindPackageMessage.cmake"
 		},
 		{
-			"path" : "DensityMap/cells.vs"
-		},
-		{
-			"path" : "DensityMap/cells.fs"
-		},
-		{
-			"path" : "DensityMap/lines.vs"
-		},
-		{
-			"path" : "DensityMap/lines.fs"
-		},
-		{
 			"path" : "Dependencies/glfw/CMakeLists.txt"
 		},
 		{

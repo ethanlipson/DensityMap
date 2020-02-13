@@ -18,15 +18,7 @@
 
 // Keyboard and mouse input functions
 void cursorPosMovementCallback(GLFWwindow* window, double xpos, double ypos);
-void cursorPosRotationCallback(GLFWwindow* window, double xpos, double ypos);
 void processKeyboardInput(GLFWwindow* window);
-
-// Updates the vertices on the graphics card
-// -----
-// This function is pretty slow right now (a few hundred milliseconds)
-// because it writes several megabytes of data at once to the graphics card,
-// but it will be optimized soon
-void updateVertexBuffer(unsigned int& VBO, DensityMap& grid);
 
 // Demo functions to show what the volume map looks like
 void sphereDemo(DensityMap& grid);
@@ -83,15 +75,6 @@ int main() {
 		return -1;
 	}
 
-	// Creating the shaders for the cells in the cube
-	// and for the lines of the border of the cube
-	Shader cellShader("cells.vs", "cells.fs");
-	Shader lineShader("lines.vs", "lines.fs");
-
-	// Allows blending (translucent drawing)
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	// Initializing mouse info
 	lastMouseX = SCR_WIDTH / 2.0;
 	lastMouseY = SCR_HEIGHT / 2.0;
@@ -100,76 +83,9 @@ int main() {
 	// Creating the density map
 	int dim = 21;
 	DensityMap grid(dim);
-	
-	// (Optional) Adds a sphere to the center of the density map
+
 	sphereDemo(grid);
-	
-	// Get the vertices from the volume map
-	// in a form useful to OpenGL
-	std::vector<float> cellPositions = grid.getVertexPositions();
-	std::vector<unsigned char> cellDensities = grid.getVertexDensities();
-	
-	// Initializing the buffers storing the vertices
-	// of the volume map on the graphics card
-	unsigned int cellVAO, cellPositionVBO, cellDensityVBO;
-	glGenBuffers(1, &cellPositionVBO);
-	glGenBuffers(1, &cellDensityVBO);
-	glGenVertexArrays(1, &cellVAO);
-	
-	glBindVertexArray(cellVAO);
-	
-	// Cell positions
-	
-	glBindBuffer(GL_ARRAY_BUFFER, cellPositionVBO);
-	glBufferData(GL_ARRAY_BUFFER, cellPositions.size() * sizeof(float), cellPositions.data(), GL_STATIC_DRAW);
-	
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-	glEnableVertexAttribArray(0);
-	
-	// Data in each cell
-	
-	glBindBuffer(GL_ARRAY_BUFFER, cellDensityVBO);
-	glBufferData(GL_ARRAY_BUFFER, cellDensities.size() * sizeof(unsigned char), cellDensities.data(), GL_STATIC_DRAW);
-	
-	glVertexAttribIPointer(1, 1, GL_UNSIGNED_BYTE, sizeof(unsigned char), 0);
-	glEnableVertexAttribArray(1);
-
-	// Array containing the coordinates of the vertices
-	// of the white lines
-	float lines[72] = {
-		-5, -5, -5,  5, -5, -5,
-		-5,  5, -5,  5,  5, -5,
-		-5, -5,  5,  5, -5,  5,
-		-5,  5,  5,  5,  5,  5,
-
-		 // -----
-
-		-5, -5, -5, -5,  5, -5,
-		 5, -5, -5,  5,  5, -5,
-		-5, -5,  5, -5,  5,  5,
-		 5, -5,  5,  5,  5,  5,
-
-		 // -----
-
-		-5, -5, -5, -5, -5,  5,
-		 5, -5, -5,  5, -5,  5,
-		-5,  5, -5, -5,  5,  5,
-		 5,  5, -5,  5,  5,  5,
-	};
-
-	// Initializing the buffer storing the vertices
-	// of the white lines on the graphics card
-	unsigned int lineVAO, lineVBO;
-	glGenBuffers(1, &lineVBO);
-	glGenVertexArrays(1, &lineVAO);
-
-	glBindVertexArray(lineVAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(lines), lines, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-	glEnableVertexAttribArray(0);
+	grid.updateVertexBuffer();
 
 	// Main event loop
 	while (!glfwWindowShouldClose(window)) {
@@ -188,28 +104,10 @@ int main() {
 		// between -1 and 1 that OpenGL can use
 		glm::dmat4 projection = glm::perspective(glm::radians(cam.fov), double(SCR_WIDTH) / SCR_HEIGHT, 0.01, 500.0);
 		glm::dmat4 camView = cam.getViewMatrix();
-		
-		int dim = grid.getDim();
-		glm::dmat4 model = glm::scale(glm::dmat4(1.0), glm::dvec3(10.0 / (dim - 1), 10.0 / (dim - 1), 10.0 / (dim - 1)));
-		model = glm::translate(model, glm::dvec3(-(dim - 1) / 2.0, -(dim - 1) / 2.0, -(dim - 1) / 2.0));
-		
-		// Drawing the volume map
-		cellShader.use();
-		cellShader.setMat4("projection", projection);
-		cellShader.setMat4("view", camView);
-		cellShader.setMat4("model", model);
-		
-		glBindVertexArray(cellVAO);
-		glDrawArrays(GL_TRIANGLES, 0, cellDensities.size());
-		
-		// Drawing the white lines
-		lineShader.use();
-		lineShader.setMat4("projection", projection);
-		lineShader.setMat4("view", camView);
-		lineShader.setMat4("model", glm::dmat4(1.0));
-		
-		glBindVertexArray(lineVAO);
-		glDrawArrays(GL_LINES, 0, 24);
+		glm::dmat4 model = glm::dmat4(1.0);
+
+		// Draw the density map and the surrounding cube
+		grid.draw(projection, camView, model);
 
 		cam.prevPos = cam.position;
 
@@ -334,13 +232,4 @@ void fanDemo(DensityMap& grid) {
 
 		grid.addLine(vertex, vertex + glm::vec3(x, y, z), vals);
 	}
-}
-
-void updateVertexBuffer(unsigned int& VBO, DensityMap& grid) {
-	// Gets the vertices from the density map
-	std::vector<unsigned char> densities = grid.getVertexDensities();
-
-	// Writes the vertices to the vertex buffer on the graphics card
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, densities.size() * sizeof(unsigned char), densities.data());
 }

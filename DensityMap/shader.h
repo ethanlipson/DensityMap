@@ -12,7 +12,8 @@ class Shader {
 public:
 	unsigned int ID;
 
-	Shader(const GLchar* vertexPath, const GLchar* fragmentPath);
+	Shader(const GLchar* vert, const GLchar* frag, bool filepaths = true);
+	Shader();
 	void use();
 
 	void setBool(const std::string &name, bool value) const;

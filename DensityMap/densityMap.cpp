@@ -3,6 +3,73 @@
 DensityMap::DensityMap(int dim) {
 	this->dim = dim;
 
+	std::string vCells =
+		"// VERTEX SHADER											  \n"
+		"															  \n"
+		"#version 330 core											  \n"
+		"															  \n"
+		"layout(location = 0) in vec3 aPos;							  \n"
+		"layout(location = 1) in uint aShade;						  \n"
+		"															  \n"
+		"out float fShade;											  \n"
+		"															  \n"
+		"uniform mat4 projection;									  \n"
+		"uniform mat4 view;											  \n"
+		"uniform mat4 model;										  \n"
+		"															  \n"
+		"void main() {												  \n"
+		"	gl_Position = projection * view * model * vec4(aPos, 1.0);\n"
+		"	fShade = float(aShade) / 255.0;							  \n"
+		"}															  \n";
+
+	std::string fCells =
+		"// FRAGMENT SHADER											 \n"
+		"															 \n"
+		"#version 330 core											 \n"
+		"															 \n"
+		"out vec4 FragColor;										 \n"
+		"															 \n"
+		"in float fShade;											 \n"
+		"															 \n"
+		"void main() {												 \n"
+		"	if (fShade == 0.0) {									 \n"
+		"		discard;											 \n"
+		"	}														 \n"
+		"															 \n"
+		"	float shade = fShade * fShade * fShade * fShade * fShade;\n"
+		"	shade = clamp(shade, 0.0025, 1.0);						 \n"
+		"	FragColor = vec4(1.0, 1.0, 1.0, shade);					 \n"
+		"}															 \n";
+
+	std::string vLines =
+		"// VERTEX SHADER											  \n"
+		"															  \n"
+		"#version 330 core											  \n"
+		"															  \n"
+		"layout(location = 0) in vec3 aPos;							  \n"
+		"															  \n"
+		"uniform mat4 projection;									  \n"
+		"uniform mat4 view;											  \n"
+		"uniform mat4 model;										  \n"
+		"															  \n"
+		"void main() {												  \n"
+		"	gl_Position = projection * view * model * vec4(aPos, 1.0);\n"
+		"}															  \n";
+
+	std::string fLines =
+		"// FRAGMENT SHADER		  \n"
+		"						  \n"
+		"#version 330 core		  \n"
+		"						  \n"
+		"out vec4 FragColor;	  \n"
+		"						  \n"
+		"void main() {			  \n"
+		"	FragColor = vec4(1.0);\n"
+		"}						  \n";
+
+	cellShader = Shader(vCells.c_str(), fCells.c_str(), false);
+	lineShader = Shader(vLines.c_str(), fLines.c_str(), false);
+
 	// Initializing the array and filling it with zeroes
 	for (int i = 0; i < dim; i++) {
 		cells.push_back(std::vector<std::vector<unsigned char>>{});
@@ -15,6 +82,74 @@ DensityMap::DensityMap(int dim) {
 			}
 		}
 	}
+
+	// Allows blending (translucent drawing)
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Gets the vertices in a form usable to OpenGL
+	std::vector<float> cellPositions = getVertexPositions();
+	std::vector<unsigned char> cellDensities = getVertexDensities();
+
+	// Creating buffers on the graphics card
+	glGenBuffers(1, &cellPositionVBO);
+	glGenBuffers(1, &cellDensityVBO);
+	glGenVertexArrays(1, &cellVAO);
+
+	glBindVertexArray(cellVAO);
+
+	// Cell positions
+
+	glBindBuffer(GL_ARRAY_BUFFER, cellPositionVBO);
+	glBufferData(GL_ARRAY_BUFFER, cellPositions.size() * sizeof(float), cellPositions.data(), GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glEnableVertexAttribArray(0);
+
+	// Data in each cell
+
+	glBindBuffer(GL_ARRAY_BUFFER, cellDensityVBO);
+	glBufferData(GL_ARRAY_BUFFER, cellDensities.size() * sizeof(unsigned char), cellDensities.data(), GL_STATIC_DRAW);
+
+	glVertexAttribIPointer(1, 1, GL_UNSIGNED_BYTE, sizeof(unsigned char), 0);
+	glEnableVertexAttribArray(1);
+
+	// ------------------
+	// Array containing the coordinates of the vertices
+	// of the white lines
+	float lines[72] = {
+		-5, -5, -5,  5, -5, -5,
+		-5,  5, -5,  5,  5, -5,
+		-5, -5,  5,  5, -5,  5,
+		-5,  5,  5,  5,  5,  5,
+	
+		// -----
+	
+	   -5, -5, -5, -5,  5, -5,
+		5, -5, -5,  5,  5, -5,
+	   -5, -5,  5, -5,  5,  5,
+		5, -5,  5,  5,  5,  5,
+	
+		// -----
+	
+	   -5, -5, -5, -5, -5,  5,
+		5, -5, -5,  5, -5,  5,
+	   -5,  5, -5, -5,  5,  5,
+		5,  5, -5,  5,  5,  5
+	};
+
+	// Initializing the buffer storing the vertices
+	// of the white lines on the graphics card
+	glGenBuffers(1, &lineVBO);
+	glGenVertexArrays(1, &lineVAO);
+
+	glBindVertexArray(lineVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(lines), lines, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glEnableVertexAttribArray(0);
 }
 
 void DensityMap::clear(unsigned char value) {
@@ -192,21 +327,35 @@ int DensityMap::getDim() {
 	return dim;
 }
 
-// Not being used right now, but maybe in the future
-// to get smoother shading
-float pointLineDistance(glm::vec3 a, glm::vec3 b, glm::vec3 v) {
-	glm::vec3 ab = b - a;
-	glm::vec3 av = v - a;
+void DensityMap::draw(glm::dmat4 projection, glm::dmat4 view, glm::dmat4 model) {
+	glm::dmat4 _model = glm::scale(glm::dmat4(1.0), glm::dvec3(10.0 / (dim - 1), 10.0 / (dim - 1), 10.0 / (dim - 1)));
+	_model = glm::translate(_model, glm::dvec3(-(dim - 1) / 2.0, -(dim - 1) / 2.0, -(dim - 1) / 2.0));
+	model *= _model;
 
-	if (glm::dot(av, ab) <= 0.0) {
-		return glm::length(av);
-	}
+	// Drawing the volume map
+	cellShader.use();
+	cellShader.setMat4("projection", projection);
+	cellShader.setMat4("view", view);
+	cellShader.setMat4("model", model);
 
-	glm::vec3 bv = v - b;
+	glBindVertexArray(cellVAO);
+	glDrawArrays(GL_TRIANGLES, 0, 18 * dim * (dim - 1) * (dim - 1));
 
-	if (glm::dot(bv, ab) >= 0.0) {
-		return glm::length(bv);
-	}
+	// Drawing the white lines
+	lineShader.use();
+	lineShader.setMat4("projection", projection);
+	lineShader.setMat4("view", view);
+	lineShader.setMat4("model", glm::dmat4(1.0));
 
-	return glm::length(glm::cross(ab, av)) / glm::length(ab);
+	glBindVertexArray(lineVAO);
+	glDrawArrays(GL_LINES, 0, 24);
+}
+
+void DensityMap::updateVertexBuffer() {
+	// Gets the vertices from the density map
+	std::vector<unsigned char> densities = getVertexDensities();
+
+	// Writes the vertices to the vertex buffer on the graphics card
+	glBindBuffer(GL_ARRAY_BUFFER, cellDensityVBO);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, densities.size() * sizeof(unsigned char), densities.data());
 }
