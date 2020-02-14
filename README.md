@@ -32,11 +32,12 @@ Returns the side length of the cube.
 Draws the density map and a white box around it to the screen.
 
 <b>void updateVertexBuffer()</b>  
-Writes the new densities to the grahpics card. This function should not be called too frequently, since it takes ~100 milliseconds to complete (the time taken increases with the size of the array).
+Writes the new densities to the graphics card. Densities below the threshold set by DensityMap::setThreshold() are not written.  
+This function should not be called too frequently, since it can take a while to complete (the time taken increases with the size of the array).
 
 <b>void setThreshold(unsigned char value)</b>  
 <b>unsigned char getThreshold()</b>  
-These set and get the minimum threshold for drawing a cell of the density map. 0 means that everything is drawn, and 255 means that only the brightest values are drawn.
+These set and get the minimum threshold for writing a cell of the density map to the graphics card. 0 means that everything is written, and 255 means that only the brightest values are written.
 
 ## Movement
 

@@ -25,6 +25,11 @@ private:
 	// Minimum value needed to draw a cell
 	unsigned char threshold;
 
+	// Number of vertices in the graphics card
+	// This is needed because not all vertices
+	// are necessarily sent to the graphics card
+	int numVertices;
+
 	// Creating the shaders for the cells in the cube
 	// and for the lines of the border of the cube
 	Shader cellShader;
@@ -61,5 +66,5 @@ public:
 	// This function is pretty slow right now (around 100 milliseconds)
 	// because it writes several megabytes of data at once to the graphics card,
 	// so don't call it too frequently
-	void updateVertexBuffer();
+	void updateVertexBuffers();
 };

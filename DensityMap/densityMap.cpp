@@ -32,13 +32,7 @@ DensityMap::DensityMap(int dim) {
 		"															 \n"
 		"in float fShade;											 \n"
 		"															 \n"
-		"uniform float threshold;									 \n"
-		"															 \n"
 		"void main() {												 \n"
-		"	if (fShade < threshold) {								 \n"
-		"		discard;											 \n"
-		"	}														 \n"
-		"															 \n"
 		"	float shade = fShade * fShade * fShade * fShade * fShade;\n"
 		"	shade = clamp(shade, 0.0025, 1.0);						 \n"
 		"	FragColor = vec4(1.0, 1.0, 1.0, shade);					 \n"
@@ -201,6 +195,8 @@ void DensityMap::addLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> 
 std::vector<float> DensityMap::getVertexPositions() {
 	std::vector<float> vertices;
 
+	numVertices = 0;
+
 	for (int i = 0; i < dim - 1; i++) {
 		for (int j = 0; j < dim - 1; j++) {
 			for (int k = 0; k < dim; k++) {
@@ -209,6 +205,11 @@ std::vector<float> DensityMap::getVertexPositions() {
 				float v3[3] = { static_cast<float>(i), static_cast<float>(j) + 1, static_cast<float>(k) };
 				float v4[3] = { static_cast<float>(i) + 1, static_cast<float>(j) + 1, static_cast<float>(k) };
 
+				if (cells[i][j][k] < threshold && cells[i + 1][j][k] < threshold && 
+					cells[i][j + 1][k] < threshold && cells[i + 1][j + 1][k] < threshold) {
+					continue;
+				}
+
 				vertices.insert(vertices.end(), v1, v1 + 3);
 				vertices.insert(vertices.end(), v2, v2 + 3);
 				vertices.insert(vertices.end(), v4, v4 + 3);
@@ -216,6 +217,8 @@ std::vector<float> DensityMap::getVertexPositions() {
 				vertices.insert(vertices.end(), v1, v1 + 3);
 				vertices.insert(vertices.end(), v3, v3 + 3);
 				vertices.insert(vertices.end(), v4, v4 + 3);
+
+				numVertices += 6;
 			}
 		}
 	}
@@ -228,6 +231,11 @@ std::vector<float> DensityMap::getVertexPositions() {
                 float v3[3] = { static_cast<float>(i), static_cast<float>(j), static_cast<float>(k) + 1 };
                 float v4[3] = { static_cast<float>(i) + 1, static_cast<float>(j), static_cast<float>(k) + 1 };
 
+				if (cells[i][j][k] < threshold && cells[i + 1][j][k] < threshold && 
+					cells[i][j][k + 1] < threshold && cells[i + 1][j][k + 1] < threshold) {
+					continue;
+				}
+
 				vertices.insert(vertices.end(), v1, v1 + 3);
 				vertices.insert(vertices.end(), v2, v2 + 3);
 				vertices.insert(vertices.end(), v4, v4 + 3);
@@ -235,6 +243,8 @@ std::vector<float> DensityMap::getVertexPositions() {
 				vertices.insert(vertices.end(), v1, v1 + 3);
 				vertices.insert(vertices.end(), v3, v3 + 3);
 				vertices.insert(vertices.end(), v4, v4 + 3);
+
+				numVertices += 6;
 			}
 		}
 	}
@@ -247,6 +257,11 @@ std::vector<float> DensityMap::getVertexPositions() {
                 float v3[3] = { static_cast<float>(i), static_cast<float>(j), static_cast<float>(k) + 1 };
                 float v4[3] = { static_cast<float>(i), static_cast<float>(j) + 1, static_cast<float>(k) + 1};
 
+				if (cells[i][j][k] < threshold && cells[i][j + 1][k] < threshold && 
+					cells[i][j][k + 1] < threshold && cells[i][j + 1][k + 1] < threshold) {
+					continue;
+				}
+
 				vertices.insert(vertices.end(), v1, v1 + 3);
 				vertices.insert(vertices.end(), v2, v2 + 3);
 				vertices.insert(vertices.end(), v4, v4 + 3);
@@ -254,6 +269,8 @@ std::vector<float> DensityMap::getVertexPositions() {
 				vertices.insert(vertices.end(), v1, v1 + 3);
 				vertices.insert(vertices.end(), v3, v3 + 3);
 				vertices.insert(vertices.end(), v4, v4 + 3);
+
+				numVertices += 6;
 			}
 		}
 	}
@@ -265,6 +282,8 @@ std::vector<float> DensityMap::getVertexPositions() {
 std::vector<unsigned char> DensityMap::getVertexDensities() {
 	std::vector<unsigned char> densities;
 
+	numVertices = 0;
+
 	for (int i = 0; i < dim - 1; i++) {
 		for (int j = 0; j < dim - 1; j++) {
 			for (int k = 0; k < dim; k++) {
@@ -273,6 +292,10 @@ std::vector<unsigned char> DensityMap::getVertexDensities() {
 				unsigned char d3 = cells[i][j + 1][k];
 				unsigned char d4 = cells[i + 1][j + 1][k];
 
+				if (d1 < threshold && d2 < threshold && d3 < threshold && d4 < threshold) {
+					continue;
+				}
+
 				densities.push_back(d1);
 				densities.push_back(d2);
 				densities.push_back(d4);
@@ -280,6 +303,8 @@ std::vector<unsigned char> DensityMap::getVertexDensities() {
 				densities.push_back(d1);
 				densities.push_back(d3);
 				densities.push_back(d4);
+
+				numVertices += 6;
 			}
 		}
 	}
@@ -292,6 +317,10 @@ std::vector<unsigned char> DensityMap::getVertexDensities() {
 				unsigned char d3 = cells[i][j][k + 1];
 				unsigned char d4 = cells[i + 1][j][k + 1];
 
+				if (d1 < threshold && d2 < threshold && d3 < threshold && d4 < threshold) {
+					continue;
+				}
+
 				densities.push_back(d1);
 				densities.push_back(d2);
 				densities.push_back(d4);
@@ -299,6 +328,8 @@ std::vector<unsigned char> DensityMap::getVertexDensities() {
 				densities.push_back(d1);
 				densities.push_back(d3);
 				densities.push_back(d4);
+
+				numVertices += 6;
 			}
 		}
 	}
@@ -311,6 +342,10 @@ std::vector<unsigned char> DensityMap::getVertexDensities() {
 				unsigned char d3 = cells[i][j][k + 1];
 				unsigned char d4 = cells[i][j + 1][k + 1];
 
+				if (d1 < threshold && d2 < threshold && d3 < threshold && d4 < threshold) {
+					continue;
+				}
+
 				densities.push_back(d1);
 				densities.push_back(d2);
 				densities.push_back(d4);
@@ -318,6 +353,8 @@ std::vector<unsigned char> DensityMap::getVertexDensities() {
 				densities.push_back(d1);
 				densities.push_back(d3);
 				densities.push_back(d4);
+
+				numVertices += 6;
 			}
 		}
 	}
@@ -340,10 +377,9 @@ void DensityMap::draw(glm::dmat4 projection, glm::dmat4 view, glm::dmat4 model) 
 	cellShader.setMat4("projection", projection);
 	cellShader.setMat4("view", view);
 	cellShader.setMat4("model", model);
-	cellShader.setFloat("threshold", float(threshold) / 255.0);
 
 	glBindVertexArray(cellVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 18 * dim * (dim - 1) * (dim - 1));
+	glDrawArrays(GL_TRIANGLES, 0, numVertices);
 
 	// Drawing the white lines
 	lineShader.use();
@@ -355,8 +391,15 @@ void DensityMap::draw(glm::dmat4 projection, glm::dmat4 view, glm::dmat4 model) 
 	glDrawArrays(GL_LINES, 0, 24);
 }
 
-void DensityMap::updateVertexBuffer() {
-	// Gets the vertices from the density map
+void DensityMap::updateVertexBuffers() {
+	// Gets the vertex positions
+	std::vector<float> positions = getVertexPositions();
+
+	// Writes the vertex positions to the vertex buffer on the graphics card
+	glBindBuffer(GL_ARRAY_BUFFER, cellPositionVBO);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, positions.size() * sizeof(float), positions.data());
+
+	// Gets the vertex densities
 	std::vector<unsigned char> densities = getVertexDensities();
 
 	// Writes the vertices to the vertex buffer on the graphics card

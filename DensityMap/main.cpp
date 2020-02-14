@@ -81,13 +81,15 @@ int main() {
 	firstMouse = true;
 
 	// Creating the density map
-	int dim = 101;
+	int dim = 151;
 	DensityMap grid(dim);
 
+	// Add a sphere to the center of the grid
 	sphereDemo(grid);
-	grid.updateVertexBuffer();
 
+	// Add all non-empty cells to the map
 	grid.setThreshold(1);
+	grid.updateVertexBuffers();
 
 	// Main event loop
 	while (!glfwWindowShouldClose(window)) {
