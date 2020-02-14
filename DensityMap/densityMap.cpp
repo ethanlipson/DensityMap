@@ -175,19 +175,45 @@ void DensityMap::addLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> 
 	float dy = (p2.y - p1.y) / numVals;
 	float dz = (p2.z - p1.z) / numVals;
 
+	// Multiple values can fall in the same box, so we
+	// take their average and them combine it with
+	// the current value in the box
+	int newValue = 0;
+	int numNewValues = 0;
+
+	// Previous ix, iy, and iz values
+	int px = -1;
+	int py = -1;
+	int pz = -1;
+
 	for (int i = 0; i < numVals; i++) {
-		// Cell index determined by x, y, and z
+		// Cell indices determined by x, y, and z
 		int ix = x * dim;
 		int iy = y * dim;
 		int iz = z * dim;
 
-		// Put the value in the array
-		cells[ix][iy][iz] = vals[i];
+		// Get the next value from the vals array
+		newValue += vals[i];
+		numNewValues++;
+
+		if (ix != px || iy != py || iz != pz) {
+			// Write the new value to the array
+			cells[ix][iy][iz] = static_cast<unsigned char>(newValue / numNewValues);
+
+			// Reset these values (since we are in a new cell now)
+			newValue = 0;
+			numNewValues = 0;
+		}
 
 		// Move x, y, and z along the line
 		x += dx;
 		y += dy;
 		z += dz;
+
+		// Update the previous ix, iy, and iz
+		px = ix;
+		py = iy;
+		pz = iz;
 	}
 }
 
