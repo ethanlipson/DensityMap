@@ -393,10 +393,10 @@ int DensityMap::getDim() {
 	return dim;
 }
 
-void DensityMap::draw(glm::dmat4 projection, glm::dmat4 view, glm::dmat4 model) {
+void DensityMap::draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model) {
 	// Needed to standardize the size of the grid
-	glm::dmat4 _model = glm::scale(glm::dmat4(1.0), glm::dvec3(10.0 / (dim - 1), 10.0 / (dim - 1), 10.0 / (dim - 1)));
-	_model = glm::translate(_model, glm::dvec3(-(dim - 1) / 2.0, -(dim - 1) / 2.0, -(dim - 1) / 2.0));
+	glm::mat4 _model = glm::scale<float>(glm::mat4(1.0), glm::vec3(10.0 / (dim - 1), 10.0 / (dim - 1), 10.0 / (dim - 1)));
+	_model = glm::translate<float>(_model, glm::vec3(-(dim - 1) / 2.0, -(dim - 1) / 2.0, -(dim - 1) / 2.0));
 
 	// Drawing the volume map
 	cellShader.use();

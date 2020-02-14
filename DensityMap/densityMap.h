@@ -51,7 +51,7 @@ public:
 	int getDim();
 
 	// Draws to the screen and optionally clears the screen
-	void draw(glm::dmat4 projection, glm::dmat4 view, glm::dmat4 model);
+	void draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
 
 	// Used by DensityMap::draw()
 	std::vector<float> getVertexPositions();
