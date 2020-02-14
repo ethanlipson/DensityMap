@@ -106,12 +106,12 @@ int main() {
 
 		// Creating matrices to transform the vertices into NDC (screen) coordinates
 		// between -1 and 1 that OpenGL can use
-		glm::dmat4 projection = glm::perspective(glm::radians(cam.fov), double(SCR_WIDTH) / SCR_HEIGHT, 0.01, 500.0);
-		glm::dmat4 camView = cam.getViewMatrix();
-		glm::dmat4 model = glm::dmat4(1.0);
+		glm::mat4 projection = glm::perspective<float>(glm::radians(cam.fov), float(SCR_WIDTH) / SCR_HEIGHT, 0.01, 500.0);
+		glm::mat4 view = cam.getViewMatrix();
+		glm::mat4 model = glm::mat4(1.0);
 
 		// Draw the density map and the surrounding cube
-		grid.draw(projection, camView, model);
+		grid.draw(projection, view, model);
 
 		// Used to make camera move speed consistent
 		cam.prevPos = cam.position;
