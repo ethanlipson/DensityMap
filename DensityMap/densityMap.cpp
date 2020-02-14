@@ -394,15 +394,15 @@ int DensityMap::getDim() {
 }
 
 void DensityMap::draw(glm::dmat4 projection, glm::dmat4 view, glm::dmat4 model) {
+	// Needed to standardize the size of the grid
 	glm::dmat4 _model = glm::scale(glm::dmat4(1.0), glm::dvec3(10.0 / (dim - 1), 10.0 / (dim - 1), 10.0 / (dim - 1)));
 	_model = glm::translate(_model, glm::dvec3(-(dim - 1) / 2.0, -(dim - 1) / 2.0, -(dim - 1) / 2.0));
-	model *= _model;
 
 	// Drawing the volume map
 	cellShader.use();
 	cellShader.setMat4("projection", projection);
 	cellShader.setMat4("view", view);
-	cellShader.setMat4("model", model);
+	cellShader.setMat4("model", model * _model);
 
 	glBindVertexArray(cellVAO);
 	glDrawArrays(GL_TRIANGLES, 0, numVertices);
@@ -411,7 +411,7 @@ void DensityMap::draw(glm::dmat4 projection, glm::dmat4 view, glm::dmat4 model) 
 	lineShader.use();
 	lineShader.setMat4("projection", projection);
 	lineShader.setMat4("view", view);
-	lineShader.setMat4("model", glm::dmat4(1.0));
+	lineShader.setMat4("model", model);
 
 	glBindVertexArray(lineVAO);
 	glDrawArrays(GL_LINES, 0, 24);
