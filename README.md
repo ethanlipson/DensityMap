@@ -41,13 +41,15 @@ These set and get the minimum threshold for writing a cell of the density map to
 
 ## Movement
 
-Right now, the camera is controlled using WASD, plus Q and E for vertical movement. This will be changed to a stationary camera with a rotating display in the future.
+There are two movement options, controlled by setting ROTATE_GRID at the top of main.cpp to either true or false.  
+
+If ROTATE_GRID is false, then the camera can be moved around using WASD plus Q and E for upwards and downwards movement. C zooms in the camera.  
+
+If ROTATE_GRID is true, then the camera is stationary, and the grid can be rotated by clicking the left mouse button and dragging. Press R to reset the orientation.  
 
 ## To Do
-
-Add cube rotation and a static camera.  
+ 
 Add GUI features.  
 Speed optimizations !!!!!  
-Dynamic resolution scaling (for the density display)  
 
 ![The image is in the images folder](https://github.com/ethanlipson/DensityMap/raw/master/images/sphere.png "Sphere demo")
