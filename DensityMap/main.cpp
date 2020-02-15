@@ -18,19 +18,28 @@
 
 // Keyboard and mouse input functions
 void cursorPosMovementCallback(GLFWwindow* window, double xpos, double ypos);
+void cursorPosRotationCallback(GLFWwindow* window, double xpos, double ypos);
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 void processKeyboardInput(GLFWwindow* window);
 
 // Demo functions to show what the volume map looks like
 void sphereDemo(DensityMap& grid);
 void fanDemo(DensityMap& grid);
 
-// Used in the mouse movement callback
+// Used in the mouse movement callbacks
 double lastMouseX;
 double lastMouseY;
 bool firstMouse;
 
+float rotationX;
+float rotationY;
+
+bool mousePressed;
+
 // Creating a Camera object
 Camera cam;
+
+const bool ROTATE_GRID = true;
 
 int main() {
 	// Window title
@@ -63,11 +72,20 @@ int main() {
 
 	// Setting callbacks
 	glfwMakeContextCurrent(window);
-	glfwSetCursorPosCallback(window, cursorPosMovementCallback);
 
-	// Lock the cursor to the center of the window
-	// and make it invisible
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	if (ROTATE_GRID) {
+		glfwSetCursorPosCallback(window, cursorPosRotationCallback);
+		glfwSetMouseButtonCallback(window, mouseButtonCallback);
+	}
+	else {
+		glfwSetCursorPosCallback(window, cursorPosMovementCallback);
+	}
+
+	if (!ROTATE_GRID) {
+		// Lock the cursor to the center of the window
+		// and make it invisible
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
 	
 	// Load the OpenGL functions from the graphics card
 	if (!gladLoadGLLoader(GLADloadproc(glfwGetProcAddress))) {
@@ -85,7 +103,7 @@ int main() {
 	DensityMap grid(dim);
 
 	// Add a sphere to the center of the grid
-	sphereDemo(grid);
+	fanDemo(grid);
 
 	// Add all non-empty cells to the map
 	grid.setThreshold(1);
@@ -109,6 +127,11 @@ int main() {
 		glm::mat4 projection = glm::perspective<float>(glm::radians(cam.fov), float(SCR_WIDTH) / SCR_HEIGHT, 0.01, 500.0);
 		glm::mat4 view = cam.getViewMatrix();
 		glm::mat4 model = glm::mat4(1.0);
+
+		if (ROTATE_GRID) {
+			model = glm::rotate(model, rotationY, glm::vec3(0, 1, 0));
+			model = glm::rotate(model, rotationX, glm::vec3(1, 0, 0));
+		}
 
 		// Draw the density map and the surrounding cube
 		grid.draw(projection, view, model);
@@ -144,30 +167,39 @@ void processKeyboardInput(GLFWwindow *window) {
 	// WASD + Q and E movement
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE))
 		glfwSetWindowShouldClose(window, true);
-	if (glfwGetKey(window, GLFW_KEY_W))
-		cam.processKeyboard(FORWARD, sprinting);
-	if (glfwGetKey(window, GLFW_KEY_S))
-		cam.processKeyboard(BACKWARD, sprinting);
-	if (glfwGetKey(window, GLFW_KEY_A))
-		cam.processKeyboard(LEFT, sprinting);
-	if (glfwGetKey(window, GLFW_KEY_D))
-		cam.processKeyboard(RIGHT, sprinting);
-	if (glfwGetKey(window, GLFW_KEY_Q))
-		cam.processKeyboard(DOWN, sprinting);
-	if (glfwGetKey(window, GLFW_KEY_E))
-		cam.processKeyboard(UP, sprinting);
 
-	// Hold C to zoom in
-	if (glfwGetKey(window, GLFW_KEY_C)) {
-		cam.fov = 30;
+	if (ROTATE_GRID) {
+		if (glfwGetKey(window, GLFW_KEY_R)) {
+			rotationX = 0;
+			rotationY = 0;
+		}
 	}
 	else {
-		cam.fov = 70;
+		if (glfwGetKey(window, GLFW_KEY_W))
+			cam.processKeyboard(FORWARD, sprinting);
+		if (glfwGetKey(window, GLFW_KEY_S))
+			cam.processKeyboard(BACKWARD, sprinting);
+		if (glfwGetKey(window, GLFW_KEY_A))
+			cam.processKeyboard(LEFT, sprinting);
+		if (glfwGetKey(window, GLFW_KEY_D))
+			cam.processKeyboard(RIGHT, sprinting);
+		if (glfwGetKey(window, GLFW_KEY_Q))
+			cam.processKeyboard(DOWN, sprinting);
+		if (glfwGetKey(window, GLFW_KEY_E))
+			cam.processKeyboard(UP, sprinting);
+
+		// Hold C to zoom in
+		if (glfwGetKey(window, GLFW_KEY_C)) {
+			cam.fov = 30;
+		}
+		else {
+			cam.fov = 70;
+		}
 	}
 }
 
 void cursorPosMovementCallback(GLFWwindow* window, double xpos, double ypos) {
-	// Ensures that the viewer faces forward on startup
+	// Ensures that the camera faces forward on startup
 	if (firstMouse) {
 		lastMouseX = xpos;
 		lastMouseY = ypos;
@@ -181,6 +213,36 @@ void cursorPosMovementCallback(GLFWwindow* window, double xpos, double ypos) {
 	lastMouseY = ypos;
 
 	cam.processMouseMovement(xoffset, yoffset);
+}
+
+void cursorPosRotationCallback(GLFWwindow* window, double xpos, double ypos) {
+	// Ensures that the cube faces forward on startup
+	if (firstMouse) {
+		lastMouseX = xpos;
+		lastMouseY = ypos;
+		firstMouse = false;
+	}
+
+	// Updating the camera angle
+	double xoffset = xpos - lastMouseX;
+	double yoffset = lastMouseY - ypos;
+	lastMouseX = xpos;
+	lastMouseY = ypos;
+
+	if (mousePressed) {
+		rotationY += xoffset / 200.0;
+		rotationX -= yoffset / 200.0;
+	}
+}
+
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		mousePressed = true;
+	}
+
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+		mousePressed = false;
+	}
 }
 
 void sphereDemo(DensityMap& grid) {
