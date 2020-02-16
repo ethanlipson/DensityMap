@@ -1,6 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 #include <iostream>
 #include <string>
@@ -130,7 +131,7 @@ int main() {
 
 		if (ROTATE_GRID) {
 			model = glm::rotate(model, rotationY, glm::vec3(0, 1, 0));
-			model = glm::rotate(model, rotationX, glm::vec3(1, 0, 0));
+			model = glm::rotate(model, rotationX, glm::rotate(glm::vec3(1, 0, 0), rotationY, glm::vec3(0, -1, 0)));
 		}
 
 		// Draw the density map and the surrounding cube
@@ -232,6 +233,15 @@ void cursorPosRotationCallback(GLFWwindow* window, double xpos, double ypos) {
 	if (mousePressed) {
 		rotationY += xoffset / 200.0;
 		rotationX -= yoffset / 200.0;
+
+		// 1.5 is a bit less than pi / 2
+		if (rotationX > 1.5) {
+			rotationX = 1.5;
+		}
+
+		if (rotationX < -1.5) {
+			rotationX = -1.5;
+		}
 	}
 }
 
