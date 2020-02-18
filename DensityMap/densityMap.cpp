@@ -188,9 +188,9 @@ void DensityMap::addLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> 
 
 	for (int i = 0; i < numVals; i++) {
 		// Cell indices determined by x, y, and z
-		int ix = x * dim;
-		int iy = y * dim;
-		int iz = z * dim;
+		int ix = x * (dim - 1);
+		int iy = y * (dim - 1);
+		int iz = z * (dim - 1);
 
 		// Get the next value from the vals array
 		newValue += vals[i];
