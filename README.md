@@ -2,11 +2,6 @@
 
 DensityMap is a class that stores a 3D array of unsigned bytes between 0 and 255 (inclusive) and allows them to be displayed using OpenGL.
 
-## Public Members
-
-<b>std::vector&lt;std::vector&lt;std::vector&lt;unsigned char&gt;&gt;&gt; cells</b>  
-The 3D array containing the density at each position, consisting of unsigned bytes.
-
 ## Methods
 
 <b>DensityMap(int dim)</b>  
