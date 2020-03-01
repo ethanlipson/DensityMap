@@ -40,7 +40,7 @@ bool mousePressed;
 // Creating a Camera object
 Camera cam;
 
-const bool ROTATE_GRID = false;
+const bool ROTATE_GRID = true;
 
 int main() {
 	// Window title
