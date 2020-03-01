@@ -1,6 +1,6 @@
 #include "densityMap.h"
 
-DensityMap::DensityMap(int dim) {
+DensityMap::DensityMap(long long int dim) {
 	this->dim = dim;
 	threshold = 0;
 

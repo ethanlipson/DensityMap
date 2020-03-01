@@ -13,7 +13,7 @@
 class DensityMap {
 private:
 	// This should never change after initialization
-	int dim;
+	long long int dim;
 
 	// IDs of buffers on the graphics card
 	unsigned int cellVAO;
@@ -32,7 +32,7 @@ private:
 	Shader lineShader;
 public:
 	// Constructor
-	DensityMap(int dim);
+	DensityMap(long long int dim);
 
 	// Adds a line of data between p1 and p2
 	void addLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals);
