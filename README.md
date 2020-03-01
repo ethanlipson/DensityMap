@@ -22,7 +22,7 @@ Draws the density map and a white box around it to the screen.
 
 <b>void setThreshold(unsigned char value)</b>  
 <b>unsigned char getThreshold()</b>  
-These set and get the minimum threshold for writing a cell of the density map to the graphics card. 0 means that everything is written, and 255 means that only the brightest values are written.
+These set and get the minimum value needed to draw a cell. The fewer cells are drawn, the faster your program will run.
 
 ## Movement
 
