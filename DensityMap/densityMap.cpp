@@ -30,7 +30,7 @@ DensityMap::DensityMap(int dim) {
 		"																\n"
 		"void main() {													\n"
 		"	float shade = fShade * fShade * fShade * fShade * fShade;	\n"
-		"	shade = clamp(shade, 0.0025, 1.0);							\n"
+		"	shade = clamp(shade, 0.0022, 1.0);							\n"
 		"	FragColor = vec4(1.0, 1.0, 1.0, shade);						\n"
 		"}																\n";
 
@@ -49,16 +49,16 @@ DensityMap::DensityMap(int dim) {
 		"uniform mat4 model;															\n"
 		"																				\n"
 		"uniform int dim;																\n"
-		"uniform uint threshold;														\n"
+		"uniform float threshold;														\n"
 		"																				\n"
-		"uniform usamplerBuffer densities;												\n"
+		"uniform samplerBuffer densities;												\n"
 		"																				\n"
 		"vec4 transform(vec4 v) {														\n"
 		"	return projection * view * model * v;										\n"
 		"}																				\n"
 		"																				\n"
 		"float getDensity(int x, int y, int z) {										\n"
-		"	return float(texelFetch(densities, x * dim * dim + y * dim + z)) / 255;		\n"
+		"	return texelFetch(densities, x * dim * dim + y * dim + z).x;				\n"
 		"}																				\n"
 		"																				\n"
 		"void genSquare(int x, int y, int z, int a, int b, int c) {						\n"
@@ -182,20 +182,20 @@ DensityMap::DensityMap(int dim) {
 		-5,  5, -5,  5,  5, -5,
 		-5, -5,  5,  5, -5,  5,
 		-5,  5,  5,  5,  5,  5,
-	
+
 		// -----
-	
-	   -5, -5, -5, -5,  5, -5,
-		5, -5, -5,  5,  5, -5,
-	   -5, -5,  5, -5,  5,  5,
-		5, -5,  5,  5,  5,  5,
-	
+
+		-5, -5, -5, -5,  5, -5,
+		 5, -5, -5,  5,  5, -5,
+		-5, -5,  5, -5,  5,  5,
+		 5, -5,  5,  5,  5,  5,
+
 		// -----
-	
-	   -5, -5, -5, -5, -5,  5,
-		5, -5, -5,  5, -5,  5,
-	   -5,  5, -5, -5,  5,  5,
-		5,  5, -5,  5,  5,  5
+
+		-5, -5, -5, -5, -5,  5,
+		 5, -5, -5,  5, -5,  5,
+		-5,  5, -5, -5,  5,  5,
+		 5,  5, -5,  5,  5,  5
 	};
 
 	// Initializing the buffer storing the vertices
@@ -216,7 +216,7 @@ void DensityMap::clear(unsigned char value) {
 	// Fills the whole array with value
 	// Defaults to zero
 
-	glBindBuffer(GL_TEXTURE_BUFFER, cellDensityBufferTexture);
+	glBindBuffer(GL_TEXTURE_BUFFER, cellDensityTBO);
 	unsigned char* cells = (unsigned char*)glMapBuffer(GL_TEXTURE_BUFFER, GL_WRITE_ONLY);
 
 	for (int i = 0; i < dim; i++) {
@@ -231,7 +231,7 @@ void DensityMap::clear(unsigned char value) {
 }
 
 void DensityMap::addLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals) {
-	glBindBuffer(GL_TEXTURE_BUFFER, cellDensityBufferTexture);
+	glBindBuffer(GL_TEXTURE_BUFFER, cellDensityTBO);
 	unsigned char* cells = (unsigned char*)glMapBuffer(GL_TEXTURE_BUFFER, GL_WRITE_ONLY);
 
 	int numVals = vals.size();
@@ -308,7 +308,11 @@ void DensityMap::draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model) {
 	cellShader.setMat4("model", model * _model);
 	cellShader.setInt("dim", dim);
 	cellShader.setInt("densities", 0);
-	cellShader.setUInt("threshold", threshold);
+	cellShader.setFloat("threshold", static_cast<float>(threshold) / 255);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_BUFFER, cellDensityBufferTexture);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R8, cellDensityTBO);
 
 	glBindVertexArray(cellVAO);
 	glDrawArrays(GL_POINTS, 0, dim * dim * dim);
