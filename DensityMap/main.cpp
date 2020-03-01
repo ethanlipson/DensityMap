@@ -40,7 +40,7 @@ bool mousePressed;
 // Creating a Camera object
 Camera cam;
 
-const bool ROTATE_GRID = true;
+const bool ROTATE_GRID = false;
 
 int main() {
 	// Window title
@@ -100,7 +100,7 @@ int main() {
 	firstMouse = true;
 
 	// Creating the density map
-	int dim = 101;
+	int dim = 100;
 	DensityMap grid(dim);
 
 	// Add a sphere to the center of the grid
@@ -108,7 +108,6 @@ int main() {
 
 	// Add all non-empty cells to the map
 	grid.setThreshold(1);
-	grid.updateVertexBuffers();
 
 	// Main event loop
 	while (!glfwWindowShouldClose(window)) {
@@ -255,36 +254,36 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 	}
 }
 
-void sphereDemo(DensityMap& grid) {
-	// Adds a sphere to the center of the volume map
-
-	int dim = grid.getDim();
-
-	float radius = 0.3;
-
-	for (int i = 0; i < dim; i++) {
-		for (int j = 0; j < dim; j++) {
-			for (int k = 0; k < dim; k++) {
-				float xd = i - ((dim - 1) / 2.0);
-				float yd = j - ((dim - 1) / 2.0);
-				float zd = k - ((dim - 1) / 2.0);
-
-				float mxd = (dim - 1) / 2.0;
-				float myd = (dim - 1) / 2.0;
-				float mzd = (dim - 1) / 2.0;
-
-				float distance = sqrt(xd * xd + yd * yd + zd * zd);
-				float maxDistance = sqrt(mxd * mxd + myd * myd + mzd * mzd);
-				float shade = (maxDistance - distance) / maxDistance;
-				shade = shade * shade;
-
-				if (distance < radius * dim) {
-					grid.cells[i][j][k] = static_cast<unsigned char>(shade * 255);
-				}
-			}
-		}
-	}
-}
+//void sphereDemo(DensityMap& grid) {
+//	// Adds a sphere to the center of the volume map
+//
+//	int dim = grid.getDim();
+//
+//	float radius = 0.3;
+//
+//	for (int i = 0; i < dim; i++) {
+//		for (int j = 0; j < dim; j++) {
+//			for (int k = 0; k < dim; k++) {
+//				float xd = i - ((dim - 1) / 2.0);
+//				float yd = j - ((dim - 1) / 2.0);
+//				float zd = k - ((dim - 1) / 2.0);
+//
+//				float mxd = (dim - 1) / 2.0;
+//				float myd = (dim - 1) / 2.0;
+//				float mzd = (dim - 1) / 2.0;
+//
+//				float distance = sqrt(xd * xd + yd * yd + zd * zd);
+//				float maxDistance = sqrt(mxd * mxd + myd * myd + mzd * mzd);
+//				float shade = (maxDistance - distance) / maxDistance;
+//				shade = shade * shade;
+//
+//				if (distance < radius * dim) {
+//					grid.cells[i][j][k] = static_cast<unsigned char>(shade * 255);
+//				}
+//			}
+//		}
+//	}
+//}
 
 void fanDemo(DensityMap& grid) {
 	// Adds a fan shape to the volume map

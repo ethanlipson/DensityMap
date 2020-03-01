@@ -5,77 +5,145 @@ DensityMap::DensityMap(int dim) {
 	threshold = 0;
 
 	std::string vCells =
-		"// VERTEX SHADER											  \n"
-		"															  \n"
-		"#version 330 core											  \n"
-		"															  \n"
-		"layout(location = 0) in vec3 aPos;							  \n"
-		"layout(location = 1) in uint aShade;						  \n"
-		"															  \n"
-		"out float fShade;											  \n"
-		"															  \n"
-		"uniform mat4 projection;									  \n"
-		"uniform mat4 view;											  \n"
-		"uniform mat4 model;										  \n"
-		"															  \n"
-		"void main() {												  \n"
-		"	gl_Position = projection * view * model * vec4(aPos, 1.0);\n"
-		"	fShade = float(aShade) / 255.0;							  \n"
-		"}															  \n";
+		"// VERTEX SHADER						\n"
+		"										\n"
+		"#version 330 core						\n"
+		"										\n"
+		"uniform int dim;						\n"
+		"										\n"
+		"void main() {							\n"
+		"	int x = gl_VertexID / (dim * dim);	\n"
+		"	int y = (gl_VertexID / dim) % dim;	\n"
+		"	int z = gl_VertexID % dim;			\n"
+		"										\n"
+		"	gl_Position = vec4(x, y, z, 1.0);	\n"
+		"}										\n";
 
 	std::string fCells =
-		"// FRAGMENT SHADER											 \n"
-		"															 \n"
-		"#version 330 core											 \n"
-		"															 \n"
-		"out vec4 FragColor;										 \n"
-		"															 \n"
-		"in float fShade;											 \n"
-		"															 \n"
-		"void main() {												 \n"
-		"	float shade = fShade * fShade * fShade * fShade * fShade;\n"
-		"	shade = clamp(shade, 0.0025, 1.0);						 \n"
-		"	FragColor = vec4(1.0, 1.0, 1.0, shade);					 \n"
-		"}															 \n";
+		"// FRAGMENT SHADER												\n"
+		"																\n"
+		"#version 330 core												\n"
+		"																\n"
+		"out vec4 FragColor;											\n"
+		"																\n"
+		"in float fShade;												\n"
+		"																\n"
+		"void main() {													\n"
+		"	float shade = fShade * fShade * fShade * fShade * fShade;	\n"
+		"	shade = clamp(shade, 0.0025, 1.0);							\n"
+		"	FragColor = vec4(1.0, 1.0, 1.0, shade);						\n"
+		"}																\n";
+
+	std::string gCells =
+		"// GEOMETRY SHADER																\n"
+		"																				\n"
+		"#version 330 core																\n"
+		"																				\n"
+		"layout(points) in;																\n"
+		"layout(triangle_strip, max_vertices = 18) out;									\n"
+		"																				\n"
+		"out float fShade;																\n"
+		"																				\n"
+		"uniform mat4 projection;														\n"
+		"uniform mat4 view;																\n"
+		"uniform mat4 model;															\n"
+		"																				\n"
+		"uniform int dim;																\n"
+		"uniform uint threshold;														\n"
+		"																				\n"
+		"uniform usamplerBuffer densities;												\n"
+		"																				\n"
+		"vec4 transform(vec4 v) {														\n"
+		"	return projection * view * model * v;										\n"
+		"}																				\n"
+		"																				\n"
+		"float getDensity(int x, int y, int z) {										\n"
+		"	return float(texelFetch(densities, x * dim * dim + y * dim + z)) / 255;		\n"
+		"}																				\n"
+		"																				\n"
+		"void genSquare(int x, int y, int z, int a, int b, int c) {						\n"
+		"	for (int i = 0; i < 3; i++) {												\n"
+		"		if (ivec3(a, b, c)[i] == 1) {											\n"
+		"			vec4 add = vec4(0.0);												\n"
+		"			add[i] = 1.0;														\n"
+		"																				\n"
+		"			gl_Position = transform(vec4(x, y, z, 1.0));						\n"
+		"			fShade = getDensity(x, y, z);										\n"
+		"			EmitVertex();														\n"
+		"																				\n"
+		"			gl_Position = transform(vec4(x, y, z, 1.0) + add);					\n"
+		"			fShade = getDensity(x + int(add.x), y + int(add.y), z + int(add.z));\n"
+		"			EmitVertex();														\n"
+		"																				\n"
+		"			gl_Position = transform(vec4(x, y, z, 1.0) + vec4(a, b, c, 0.0));	\n"
+		"			fShade = getDensity(x + a, y + b, z + c);							\n"
+		"			EmitVertex();														\n"
+		"																				\n"
+		"			EndPrimitive();														\n"
+		"		}																		\n"
+		"	}																			\n"
+		"}																				\n"
+		"																				\n"
+		"void main() {																	\n"
+		"	int x = int(gl_in[0].gl_Position.x);										\n"
+		"	int y = int(gl_in[0].gl_Position.y);										\n"
+		"	int z = int(gl_in[0].gl_Position.z);										\n"
+		"																				\n"
+		"	if (getDensity(x, y, z) < threshold) {										\n"
+		"		return;																	\n"
+		"	}																			\n"
+		"																				\n"
+		"	fShade = float(x + y + z) / (dim * 3);										\n"
+		"																				\n"
+		"	if (x != dim - 1 && y != dim - 1) {											\n"
+		"		genSquare(x, y, z, 1, 1, 0);											\n"
+		"	}																			\n"
+		"																				\n"
+		"	if (x != dim - 1 && z != dim - 1) {											\n"
+		"		genSquare(x, y, z, 1, 0, 1);											\n"
+		"	}																			\n"
+		"																				\n"
+		"	if (y != dim - 1 && z != dim - 1) {											\n"
+		"		genSquare(x, y, z, 0, 1, 1);											\n"
+		"	}																			\n"
+		"}																				\n";
 
 	std::string vLines =
-		"// VERTEX SHADER											  \n"
-		"															  \n"
-		"#version 330 core											  \n"
-		"															  \n"
-		"layout(location = 0) in vec3 aPos;							  \n"
-		"															  \n"
-		"uniform mat4 projection;									  \n"
-		"uniform mat4 view;											  \n"
-		"uniform mat4 model;										  \n"
-		"															  \n"
-		"void main() {												  \n"
-		"	gl_Position = projection * view * model * vec4(aPos, 1.0);\n"
-		"}															  \n";
+		"// VERTEX SHADER												\n"
+		"																\n"
+		"#version 330 core												\n"
+		"																\n"
+		"layout(location = 0) in vec3 aPos;								\n"
+		"																\n"
+		"uniform mat4 projection;										\n"
+		"uniform mat4 view;												\n"
+		"uniform mat4 model;											\n"
+		"																\n"
+		"void main() {													\n"
+		"	gl_Position = projection * view * model * vec4(aPos, 1.0);	\n"
+		"}																\n";
 
 	std::string fLines =
-		"// FRAGMENT SHADER		  \n"
-		"						  \n"
-		"#version 330 core		  \n"
-		"						  \n"
-		"out vec4 FragColor;	  \n"
-		"						  \n"
-		"void main() {			  \n"
-		"	FragColor = vec4(1.0);\n"
-		"}						  \n";
+		"// FRAGMENT SHADER			\n"
+		"							\n"
+		"#version 330 core			\n"
+		"							\n"
+		"out vec4 FragColor;		\n"
+		"							\n"
+		"void main() {				\n"
+		"	FragColor = vec4(1.0);	\n"
+		"}							\n";
 
-	cellShader = Shader(vCells.c_str(), fCells.c_str(), false);
+	cellShader = Shader(vCells.c_str(), fCells.c_str(), gCells.c_str(), false);
 	lineShader = Shader(vLines.c_str(), fLines.c_str(), false);
+
+	unsigned char* cells = new unsigned char[dim * dim * dim];
 
 	// Initializing the array and filling it with zeroes
 	for (int i = 0; i < dim; i++) {
-		cells.push_back(std::vector<std::vector<unsigned char>>{});
-
 		for (int j = 0; j < dim; j++) {
-			cells.back().push_back(std::vector<unsigned char>{});
-
 			for (int k = 0; k < dim; k++) {
-				cells.back().back().push_back(0);
+				cells[i * dim * dim + j * dim + k] = 0;
 			}
 		}
 	}
@@ -84,32 +152,27 @@ DensityMap::DensityMap(int dim) {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// Gets the vertices in a form usable to OpenGL
-	std::vector<float> cellPositions = getVertexPositions();
-	std::vector<unsigned char> cellDensities = getVertexDensities();
-
 	// Creating buffers on the graphics card
-	glGenBuffers(1, &cellPositionVBO);
-	glGenBuffers(1, &cellDensityVBO);
+
+	// ------------------
+	// Buffer containing the densities of each cell
+	glGenBuffers(1, &cellDensityTBO);
 	glGenVertexArrays(1, &cellVAO);
 
 	glBindVertexArray(cellVAO);
 
-	// Cell positions
+	glBindBuffer(GL_TEXTURE_BUFFER, cellDensityTBO);
+	glBufferData(GL_TEXTURE_BUFFER, dim * dim * dim * sizeof(unsigned char), cells, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, cellPositionVBO);
-	glBufferData(GL_ARRAY_BUFFER, cellPositions.size() * sizeof(float), cellPositions.data(), GL_STATIC_DRAW);
+	// Associates the texture buffer with the array we just made
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-	glEnableVertexAttribArray(0);
+	glGenTextures(1, &cellDensityBufferTexture);
 
-	// Data in each cell
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_BUFFER, cellDensityBufferTexture);
+	glTexBuffer(GL_TEXTURE_BUFFER, GL_R8, cellDensityTBO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, cellDensityVBO);
-	glBufferData(GL_ARRAY_BUFFER, cellDensities.size() * sizeof(unsigned char), cellDensities.data(), GL_STATIC_DRAW);
-
-	glVertexAttribIPointer(1, 1, GL_UNSIGNED_BYTE, sizeof(unsigned char), 0);
-	glEnableVertexAttribArray(1);
+	delete[] cells;
 
 	// ------------------
 	// Array containing the coordinates of the vertices
@@ -150,18 +213,27 @@ DensityMap::DensityMap(int dim) {
 }
 
 void DensityMap::clear(unsigned char value) {
-	// Fills the whole array with zeroes
+	// Fills the whole array with value
+	// Defaults to zero
+
+	glBindBuffer(GL_TEXTURE_BUFFER, cellDensityBufferTexture);
+	unsigned char* cells = (unsigned char*)glMapBuffer(GL_TEXTURE_BUFFER, GL_WRITE_ONLY);
 
 	for (int i = 0; i < dim; i++) {
 		for (int j = 0; j < dim; j++) {
 			for (int k = 0; k < dim; k++) {
-				cells[i][j][k] = value;
+				cells[i * dim * dim + j * dim + k] = value;
 			}
 		}
 	}
+
+	glUnmapBuffer(GL_TEXTURE_BUFFER);
 }
 
 void DensityMap::addLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals) {
+	glBindBuffer(GL_TEXTURE_BUFFER, cellDensityBufferTexture);
+	unsigned char* cells = (unsigned char*)glMapBuffer(GL_TEXTURE_BUFFER, GL_WRITE_ONLY);
+
 	int numVals = vals.size();
 
 	// x, y, and z coordinates of the current data point
@@ -198,7 +270,7 @@ void DensityMap::addLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> 
 
 		if (ix != px || iy != py || iz != pz) {
 			// Write the new value to the array
-			cells[ix][iy][iz] = static_cast<unsigned char>(newValue / numNewValues);
+			cells[ix * dim * dim + iy * dim + iz] = static_cast<unsigned char>(newValue / numNewValues);
 
 			// Reset these values (since we are in a new cell now)
 			newValue = 0;
@@ -215,177 +287,8 @@ void DensityMap::addLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> 
 		py = iy;
 		pz = iz;
 	}
-}
 
-// Returns the vertices in a form useful to OpenGL
-std::vector<float> DensityMap::getVertexPositions() {
-	std::vector<float> vertices;
-
-	numVertices = 0;
-
-	for (int i = 0; i < dim - 1; i++) {
-		for (int j = 0; j < dim - 1; j++) {
-			for (int k = 0; k < dim; k++) {
-				float v1[3] = { static_cast<float>(i), static_cast<float>(j), static_cast<float>(k) };
-				float v2[3] = { static_cast<float>(i) + 1, static_cast<float>(j), static_cast<float>(k) };
-				float v3[3] = { static_cast<float>(i), static_cast<float>(j) + 1, static_cast<float>(k) };
-				float v4[3] = { static_cast<float>(i) + 1, static_cast<float>(j) + 1, static_cast<float>(k) };
-
-				if (cells[i][j][k] < threshold && cells[i + 1][j][k] < threshold && 
-					cells[i][j + 1][k] < threshold && cells[i + 1][j + 1][k] < threshold) {
-					continue;
-				}
-
-				vertices.insert(vertices.end(), v1, v1 + 3);
-				vertices.insert(vertices.end(), v2, v2 + 3);
-				vertices.insert(vertices.end(), v4, v4 + 3);
-
-				vertices.insert(vertices.end(), v1, v1 + 3);
-				vertices.insert(vertices.end(), v3, v3 + 3);
-				vertices.insert(vertices.end(), v4, v4 + 3);
-
-				numVertices += 6;
-			}
-		}
-	}
-
-	for (int i = 0; i < dim - 1; i++) {
-		for (int j = 0; j < dim; j++) {
-			for (int k = 0; k < dim - 1; k++) {
-                float v1[3] = { static_cast<float>(i), static_cast<float>(j), static_cast<float>(k) };
-                float v2[3] = { static_cast<float>(i) + 1, static_cast<float>(j), static_cast<float>(k) };
-                float v3[3] = { static_cast<float>(i), static_cast<float>(j), static_cast<float>(k) + 1 };
-                float v4[3] = { static_cast<float>(i) + 1, static_cast<float>(j), static_cast<float>(k) + 1 };
-
-				if (cells[i][j][k] < threshold && cells[i + 1][j][k] < threshold && 
-					cells[i][j][k + 1] < threshold && cells[i + 1][j][k + 1] < threshold) {
-					continue;
-				}
-
-				vertices.insert(vertices.end(), v1, v1 + 3);
-				vertices.insert(vertices.end(), v2, v2 + 3);
-				vertices.insert(vertices.end(), v4, v4 + 3);
-
-				vertices.insert(vertices.end(), v1, v1 + 3);
-				vertices.insert(vertices.end(), v3, v3 + 3);
-				vertices.insert(vertices.end(), v4, v4 + 3);
-
-				numVertices += 6;
-			}
-		}
-	}
-
-	for (int i = 0; i < dim; i++) {
-		for (int j = 0; j < dim - 1; j++) {
-			for (int k = 0; k < dim - 1; k++) {
-                float v1[3] = { static_cast<float>(i), static_cast<float>(j), static_cast<float>(k) };
-                float v2[3] = { static_cast<float>(i), static_cast<float>(j) + 1, static_cast<float>(k) };
-                float v3[3] = { static_cast<float>(i), static_cast<float>(j), static_cast<float>(k) + 1 };
-                float v4[3] = { static_cast<float>(i), static_cast<float>(j) + 1, static_cast<float>(k) + 1};
-
-				if (cells[i][j][k] < threshold && cells[i][j + 1][k] < threshold && 
-					cells[i][j][k + 1] < threshold && cells[i][j + 1][k + 1] < threshold) {
-					continue;
-				}
-
-				vertices.insert(vertices.end(), v1, v1 + 3);
-				vertices.insert(vertices.end(), v2, v2 + 3);
-				vertices.insert(vertices.end(), v4, v4 + 3);
-
-				vertices.insert(vertices.end(), v1, v1 + 3);
-				vertices.insert(vertices.end(), v3, v3 + 3);
-				vertices.insert(vertices.end(), v4, v4 + 3);
-
-				numVertices += 6;
-			}
-		}
-	}
-
-	return vertices;
-}
-
-// Returns the cell densities
-std::vector<unsigned char> DensityMap::getVertexDensities() {
-	std::vector<unsigned char> densities;
-
-	numVertices = 0;
-
-	for (int i = 0; i < dim - 1; i++) {
-		for (int j = 0; j < dim - 1; j++) {
-			for (int k = 0; k < dim; k++) {
-				unsigned char d1 = cells[i][j][k];
-				unsigned char d2 = cells[i + 1][j][k];
-				unsigned char d3 = cells[i][j + 1][k];
-				unsigned char d4 = cells[i + 1][j + 1][k];
-
-				if (d1 < threshold && d2 < threshold && d3 < threshold && d4 < threshold) {
-					continue;
-				}
-
-				densities.push_back(d1);
-				densities.push_back(d2);
-				densities.push_back(d4);
-
-				densities.push_back(d1);
-				densities.push_back(d3);
-				densities.push_back(d4);
-
-				numVertices += 6;
-			}
-		}
-	}
-
-	for (int i = 0; i < dim - 1; i++) {
-		for (int j = 0; j < dim; j++) {
-			for (int k = 0; k < dim - 1; k++) {
-				unsigned char d1 = cells[i][j][k];
-				unsigned char d2 = cells[i + 1][j][k];
-				unsigned char d3 = cells[i][j][k + 1];
-				unsigned char d4 = cells[i + 1][j][k + 1];
-
-				if (d1 < threshold && d2 < threshold && d3 < threshold && d4 < threshold) {
-					continue;
-				}
-
-				densities.push_back(d1);
-				densities.push_back(d2);
-				densities.push_back(d4);
-
-				densities.push_back(d1);
-				densities.push_back(d3);
-				densities.push_back(d4);
-
-				numVertices += 6;
-			}
-		}
-	}
-
-	for (int i = 0; i < dim; i++) {
-		for (int j = 0; j < dim - 1; j++) {
-			for (int k = 0; k < dim - 1; k++) {
-				unsigned char d1 = cells[i][j][k];
-				unsigned char d2 = cells[i][j + 1][k];
-				unsigned char d3 = cells[i][j][k + 1];
-				unsigned char d4 = cells[i][j + 1][k + 1];
-
-				if (d1 < threshold && d2 < threshold && d3 < threshold && d4 < threshold) {
-					continue;
-				}
-
-				densities.push_back(d1);
-				densities.push_back(d2);
-				densities.push_back(d4);
-
-				densities.push_back(d1);
-				densities.push_back(d3);
-				densities.push_back(d4);
-
-				numVertices += 6;
-			}
-		}
-	}
-
-	return densities;
+	glUnmapBuffer(GL_TEXTURE_BUFFER);
 }
 
 // Returns dim
@@ -403,9 +306,12 @@ void DensityMap::draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model) {
 	cellShader.setMat4("projection", projection);
 	cellShader.setMat4("view", view);
 	cellShader.setMat4("model", model * _model);
+	cellShader.setInt("dim", dim);
+	cellShader.setInt("densities", 0);
+	cellShader.setUInt("threshold", threshold);
 
 	glBindVertexArray(cellVAO);
-	glDrawArrays(GL_TRIANGLES, 0, numVertices);
+	glDrawArrays(GL_POINTS, 0, dim * dim * dim);
 
 	// Drawing the white lines
 	lineShader.use();
@@ -415,22 +321,6 @@ void DensityMap::draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model) {
 
 	glBindVertexArray(lineVAO);
 	glDrawArrays(GL_LINES, 0, 24);
-}
-
-void DensityMap::updateVertexBuffers() {
-	// Gets the vertex positions
-	std::vector<float> positions = getVertexPositions();
-
-	// Writes the vertex positions to the vertex buffer on the graphics card
-	glBindBuffer(GL_ARRAY_BUFFER, cellPositionVBO);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, positions.size() * sizeof(float), positions.data());
-
-	// Gets the vertex densities
-	std::vector<unsigned char> densities = getVertexDensities();
-
-	// Writes the vertices to the vertex buffer on the graphics card
-	glBindBuffer(GL_ARRAY_BUFFER, cellDensityVBO);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, densities.size() * sizeof(unsigned char), densities.data());
 }
 
 void DensityMap::setThreshold(unsigned char value) {
