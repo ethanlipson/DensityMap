@@ -7,11 +7,36 @@
 #include "shader.h"
 
 #include <vector>
+#include <queue>
+#include <mutex>
 
 // Class that stores the density readings
 // and other related info
 class DensityMap {
 private:
+	// Struct for storing data in the lineQueue
+	struct Line {
+		glm::vec3 p1;
+		glm::vec3 p2;
+
+		std::vector<unsigned char> vals;
+
+		Line(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals) {
+			this->p1 = p1;
+			this->p2 = p2;
+			this->vals = vals;
+		}
+	};
+
+	// Queue for storing lines queued by addLine()
+	std::queue<Line> lineQueue;
+
+	// Necessary for thread-safety
+	std::mutex mutex;
+
+	// Pointer to the cells on the graphics card
+	unsigned char* cells;
+	
 	// This should never change after initialization
 	long long int dim;
 
@@ -30,12 +55,13 @@ private:
 	// and for the lines of the border of the cube
 	Shader cellShader;
 	Shader lineShader;
+
+	// Adds each line in the lineQueue to the GPU
+	void writeLinesToGPU();
+
 public:
 	// Constructor
 	DensityMap(long long int dim);
-
-	// Adds a line of data between p1 and p2
-	void addLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals);
 
 	// Overwrites everything with value
 	void clear(unsigned char value = 0);
@@ -46,7 +72,13 @@ public:
 	// Draws to the screen and optionally clears the screen
 	void draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
 
+	// Adds a line of data between p1 and p2 to the lineQueue
+	void addLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals);
+
 	// Set and get the threshold for drawing a cell
 	void setThreshold(unsigned char value);
 	unsigned char getThreshold();
+
+	// Writes to one cell of the density map
+	void write(unsigned int x, unsigned int y, unsigned int z, unsigned char value);
 };

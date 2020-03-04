@@ -135,13 +135,13 @@ DensityMap::DensityMap(long long int dim) {
 	cellShader = Shader(vCells.c_str(), fCells.c_str(), gCells.c_str(), false);
 	lineShader = Shader(vLines.c_str(), fLines.c_str(), false);
 
-	unsigned char* cells = new unsigned char[dim * dim * dim];
+	unsigned char* tempCells = new unsigned char[dim * dim * dim];
 
 	// Initializing the array and filling it with zeroes
 	for (int i = 0; i < dim; i++) {
 		for (int j = 0; j < dim; j++) {
 			for (int k = 0; k < dim; k++) {
-				cells[i * dim * dim + j * dim + k] = 0;
+				tempCells[i * dim * dim + j * dim + k] = 0;
 			}
 		}
 	}
@@ -160,7 +160,7 @@ DensityMap::DensityMap(long long int dim) {
 	glBindVertexArray(cellVAO);
 
 	glBindBuffer(GL_TEXTURE_BUFFER, cellDensityTBO);
-	glBufferData(GL_TEXTURE_BUFFER, dim * dim * dim * sizeof(unsigned char), cells, GL_STATIC_DRAW);
+	glBufferData(GL_TEXTURE_BUFFER, dim * dim * dim * sizeof(unsigned char), tempCells, GL_STATIC_DRAW);
 
 	// Associates the texture buffer with the array we just made
 
@@ -170,7 +170,10 @@ DensityMap::DensityMap(long long int dim) {
 	glBindTexture(GL_TEXTURE_BUFFER, cellDensityBufferTexture);
 	glTexBuffer(GL_TEXTURE_BUFFER, GL_R8, cellDensityTBO);
 
-	delete[] cells;
+	delete[] tempCells;
+
+	glBindBuffer(GL_TEXTURE_BUFFER, cellDensityTBO);
+	cells = (unsigned char*)glMapBuffer(GL_TEXTURE_BUFFER, GL_WRITE_ONLY);
 
 	// ------------------
 	// Array containing the coordinates of the vertices
@@ -214,8 +217,7 @@ void DensityMap::clear(unsigned char value) {
 	// Fills the whole array with value
 	// Defaults to zero
 
-	glBindBuffer(GL_TEXTURE_BUFFER, cellDensityTBO);
-	unsigned char* cells = (unsigned char*)glMapBuffer(GL_TEXTURE_BUFFER, GL_WRITE_ONLY);
+	std::lock_guard<std::mutex> lock(mutex);
 
 	for (int i = 0; i < dim; i++) {
 		for (int j = 0; j < dim; j++) {
@@ -224,69 +226,77 @@ void DensityMap::clear(unsigned char value) {
 			}
 		}
 	}
-
-	glUnmapBuffer(GL_TEXTURE_BUFFER);
 }
 
-void DensityMap::addLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals) {
-	glBindBuffer(GL_TEXTURE_BUFFER, cellDensityTBO);
-	unsigned char* cells = (unsigned char*)glMapBuffer(GL_TEXTURE_BUFFER, GL_WRITE_ONLY);
+void DensityMap::writeLinesToGPU() {
+	// Keeps the queue thread-safe
+	std::lock_guard<std::mutex> lock(mutex);
 
-	int numVals = vals.size();
+	for (int l = 0; l = lineQueue.size(); l++) {
+		// Getting the line from the front of the queue
+		Line line = lineQueue.front();
+		lineQueue.pop();
 
-	// x, y, and z coordinates of the current data point
-	// Moves along the line defined by p1 and p2
-	float x = p1.x;
-	float y = p1.y;
-	float z = p1.z;
+		glm::vec3 p1 = line.p1;
+		glm::vec3 p2 = line.p2;
+		std::vector<unsigned char> vals = line.vals;
 
-	// Direction of the line defined by p1 and p2
-	float dx = (p2.x - p1.x) / numVals;
-	float dy = (p2.y - p1.y) / numVals;
-	float dz = (p2.z - p1.z) / numVals;
+		int numVals = vals.size();
 
-	// Multiple values can fall in the same box, so we
-	// take their average and them combine it with
-	// the current value in the box
-	int newValue = 0;
-	int numNewValues = 0;
+		// x, y, and z coordinates of the current data point
+		// Moves along the line defined by p1 and p2
+		float x = p1.x;
+		float y = p1.y;
+		float z = p1.z;
 
-	// Previous ix, iy, and iz values
-	int px = -1;
-	int py = -1;
-	int pz = -1;
+		// Direction of the line defined by p1 and p2
+		float dx = (p2.x - p1.x) / numVals;
+		float dy = (p2.y - p1.y) / numVals;
+		float dz = (p2.z - p1.z) / numVals;
 
-	for (int i = 0; i < numVals; i++) {
-		// Cell indices determined by x, y, and z
-		int ix = x * (dim - 1);
-		int iy = y * (dim - 1);
-		int iz = z * (dim - 1);
+		// Multiple values can fall in the same box, so we
+		// take their average and them combine it with
+		// the current value in the box
+		int newValue = 0;
+		int numNewValues = 0;
 
-		// Get the next value from the vals array
-		newValue += vals[i];
-		numNewValues++;
+		// Previous ix, iy, and iz values
+		int px = -1;
+		int py = -1;
+		int pz = -1;
 
-		if (ix != px || iy != py || iz != pz) {
-			// Write the new value to the array
-			cells[ix * dim * dim + iy * dim + iz] = static_cast<unsigned char>(newValue / numNewValues);
+		for (int i = 0; i < numVals; i++) {
+			// Cell indices determined by x, y, and z
+			int ix = x * (dim - 1);
+			int iy = y * (dim - 1);
+			int iz = z * (dim - 1);
 
-			// Reset these values (since we are in a new cell now)
-			newValue = 0;
-			numNewValues = 0;
+			// Get the next value from the vals array
+			newValue += vals[i];
+			numNewValues++;
+
+			if (ix != px || iy != py || iz != pz) {
+				// Write the new value to the array
+				cells[ix * dim * dim + iy * dim + iz] = static_cast<unsigned char>(newValue / numNewValues);
+
+				// Reset these values (since we are in a new cell now)
+				newValue = 0;
+				numNewValues = 0;
+			}
+
+			// Move x, y, and z along the line
+			x += dx;
+			y += dy;
+			z += dz;
+
+			// Update the previous ix, iy, and iz
+			px = ix;
+			py = iy;
+			pz = iz;
 		}
-
-		// Move x, y, and z along the line
-		x += dx;
-		y += dy;
-		z += dz;
-
-		// Update the previous ix, iy, and iz
-		px = ix;
-		py = iy;
-		pz = iz;
 	}
 
-	glUnmapBuffer(GL_TEXTURE_BUFFER);
+	// The thread lock automatically releases in its destructor
 }
 
 // Returns dim
@@ -295,6 +305,9 @@ int DensityMap::getDim() {
 }
 
 void DensityMap::draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model) {
+	glBindBuffer(GL_TEXTURE_BUFFER, cellDensityTBO);
+	glUnmapBuffer(GL_TEXTURE_BUFFER);
+
 	// Needed to standardize the size of the grid
 	glm::mat4 _model = glm::scale<float>(glm::mat4(1.0), glm::vec3(10.0 / (dim - 1), 10.0 / (dim - 1), 10.0 / (dim - 1)));
 	_model = glm::translate<float>(_model, glm::vec3(-(dim - 1) / 2.0, -(dim - 1) / 2.0, -(dim - 1) / 2.0));
@@ -323,6 +336,10 @@ void DensityMap::draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model) {
 
 	glBindVertexArray(lineVAO);
 	glDrawArrays(GL_LINES, 0, 24);
+
+	cells = (unsigned char*)glMapBuffer(GL_TEXTURE_BUFFER, GL_WRITE_ONLY);
+
+	writeLinesToGPU();
 }
 
 void DensityMap::setThreshold(unsigned char value) {
@@ -331,4 +348,13 @@ void DensityMap::setThreshold(unsigned char value) {
 
 unsigned char DensityMap::getThreshold() {
 	return threshold;
+}
+
+void DensityMap::addLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals) {
+	std::lock_guard<std::mutex> lock(mutex);
+	lineQueue.push(Line(p1, p2, vals));
+}
+
+void DensityMap::write(unsigned int x, unsigned int y, unsigned int z, unsigned char value) {
+	cells[x * dim * dim + y * dim + z] = value;
 }

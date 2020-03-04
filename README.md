@@ -24,6 +24,9 @@ Draws the density map and a white box around it to the screen.
 <b>unsigned char getThreshold()</b>  
 These set and get the minimum value needed to draw a cell. The fewer cells are drawn, the faster your program will run.
 
+<b>void write(unsigned int x, unsigned int y, unsigned int z, unsigned char value)<b>  
+Writes to one cell of the buffer on the graphics card.
+
 ## Movement
 
 There are two movement options, controlled by setting ROTATE_GRID at the top of main.cpp to either true or false.  
