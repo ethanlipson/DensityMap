@@ -217,10 +217,12 @@ void DensityMap::clear(unsigned char value) {
 	// Fills the whole array with value
 	// Defaults to zero
 
+	std::lock_guard<std::mutex> lock(mutex);
+
 	for (int i = 0; i < dim; i++) {
 		for (int j = 0; j < dim; j++) {
 			for (int k = 0; k < dim; k++) {
-				write(i, j, k, value);
+				cellQueue.push(Cell(i, j, k, value));
 			}
 		}
 	}
