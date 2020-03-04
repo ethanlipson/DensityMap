@@ -28,8 +28,26 @@ private:
 		}
 	};
 
+	struct Cell {
+		unsigned int x;
+		unsigned int y;
+		unsigned int z;
+
+		unsigned char value;
+
+		Cell(unsigned int x, unsigned int y, unsigned int z, unsigned char value) {
+			this->x = x;
+			this->y = y;
+			this->z = z;
+			this->value = value;
+		}
+	};
+
 	// Queue for storing lines queued by addLine()
 	std::queue<Line> lineQueue;
+
+	// Queue for storing cells queued by write()
+	std::queue<Cell> cellQueue;
 
 	// Necessary for thread-safety
 	std::mutex mutex;
@@ -56,8 +74,8 @@ private:
 	Shader cellShader;
 	Shader lineShader;
 
-	// Adds each line in the lineQueue to the GPU
-	void writeLinesToGPU();
+	// Writes cells and lines in both queues to the GPU
+	void writeQueuesToGPU();
 
 public:
 	// Constructor

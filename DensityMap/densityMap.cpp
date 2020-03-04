@@ -228,11 +228,12 @@ void DensityMap::clear(unsigned char value) {
 	}
 }
 
-void DensityMap::writeLinesToGPU() {
+void DensityMap::writeQueuesToGPU() {
 	// Keeps the queue thread-safe
 	std::lock_guard<std::mutex> lock(mutex);
 
-	for (int l = 0; l = lineQueue.size(); l++) {
+	int lineQueueSize = lineQueue.size();
+	for (int l = 0; l < lineQueueSize; l++) {
 		// Getting the line from the front of the queue
 		Line line = lineQueue.front();
 		lineQueue.pop();
@@ -296,6 +297,15 @@ void DensityMap::writeLinesToGPU() {
 		}
 	}
 
+	int cellQueueSize = cellQueue.size();
+	for (int c = 0; c < cellQueueSize; c++) {
+		// Getting the cell from the front of the queue
+		Cell cell = cellQueue.front();
+		cellQueue.pop();
+
+		cells[cell.x * dim * dim + cell.y * dim + cell.z] = cell.value;
+	}
+
 	// The thread lock automatically releases in its destructor
 }
 
@@ -339,7 +349,7 @@ void DensityMap::draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model) {
 
 	cells = (unsigned char*)glMapBuffer(GL_TEXTURE_BUFFER, GL_WRITE_ONLY);
 
-	writeLinesToGPU();
+	writeQueuesToGPU();
 }
 
 void DensityMap::setThreshold(unsigned char value) {
@@ -356,5 +366,6 @@ void DensityMap::addLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> 
 }
 
 void DensityMap::write(unsigned int x, unsigned int y, unsigned int z, unsigned char value) {
-	cells[x * dim * dim + y * dim + z] = value;
+	std::lock_guard<std::mutex> lock(mutex);
+	cellQueue.push(Cell(x, y, z, value));
 }
