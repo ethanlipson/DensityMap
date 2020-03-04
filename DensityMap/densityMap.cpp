@@ -227,7 +227,7 @@ void DensityMap::clear(unsigned char value) {
 }
 
 void DensityMap::writeQueuesToGPU() {
-	// Keeps the queue thread-safe
+	// Keeps the queues thread-safe
 	std::lock_guard<std::mutex> lock(mutex);
 
 	int lineQueueSize = lineQueue.size();
