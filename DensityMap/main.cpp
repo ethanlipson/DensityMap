@@ -26,6 +26,7 @@ void processKeyboardInput(GLFWwindow* window);
 // Demo functions to show what the volume map looks like
 void sphereDemo(DensityMap& grid);
 void fanDemo(DensityMap& grid);
+void contrastBrightnessDemo(DensityMap& grid);
 
 // Used in the mouse movement callbacks
 double lastMouseX;
@@ -104,10 +105,11 @@ int main() {
 	DensityMap grid(dim);
 
 	// Add a sphere to the center of the grid
-	fanDemo(grid);
+	contrastBrightnessDemo(grid);
 
 	// Add all non-empty cells to the map
 	grid.setThreshold(1);
+	grid.setContrast(0.25);
 
 	// Main event loop
 	while (!glfwWindowShouldClose(window)) {
@@ -308,5 +310,17 @@ void fanDemo(DensityMap& grid) {
 		}
 
 		grid.writeLine(vertex, vertex + glm::vec3(x, y, z), vals);
+	}
+}
+
+void contrastBrightnessDemo(DensityMap& grid) {
+	int dim = grid.getDim();
+
+	for (int i = 0; i < dim; i++) {
+		for (int j = 0; j < dim; j++) {
+			for (int k = 0; k < dim; k++) {
+				grid.writeCell(i, j, k, float(i) / dim * 255);
+			}
+		}
 	}
 }

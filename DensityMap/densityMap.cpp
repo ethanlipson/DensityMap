@@ -2,7 +2,10 @@
 
 DensityMap::DensityMap(long long int dim) {
 	this->dim = dim;
+
 	threshold = 0;
+	brightness = 0;
+	contrast = 1;
 
 	std::string vCells =
 		"// VERTEX SHADER						\n"
@@ -28,83 +31,88 @@ DensityMap::DensityMap(long long int dim) {
 		"																\n"
 		"in float fShade;												\n"
 		"																\n"
+		"uniform float brightness;										\n"
+		"uniform float contrast;										\n"
+		"																\n"
 		"void main() {													\n"
-		"	float shade = fShade * fShade * fShade * fShade * fShade;	\n"
+		"																\n"
+		"	float shade = contrast * (fShade - 0.5) + 0.5 + brightness;	\n"
+		"	shade = shade * shade * shade * shade * shade;				\n"
 		"	shade = clamp(shade, 0.003, 1.0);							\n"
 		"	FragColor = vec4(1.0, 1.0, 1.0, shade);						\n"
 		"}																\n";
 
 	std::string gCells =
-		"// GEOMETRY SHADER																\n"
-		"																				\n"
-		"#version 330 core																\n"
-		"																				\n"
-		"layout(points) in;																\n"
-		"layout(triangle_strip, max_vertices = 12) out;									\n"
-		"																				\n"
-		"out float fShade;																\n"
-		"																				\n"
-		"uniform mat4 projection;														\n"
-		"uniform mat4 view;																\n"
-		"uniform mat4 model;															\n"
-		"																				\n"
-		"uniform int dim;																\n"
-		"uniform float threshold;														\n"
-		"																				\n"
-		"uniform samplerBuffer densities;												\n"
-		"																				\n"
-		"vec4 transform(float x, float y, float z) {									\n"
-		"	return projection * view * model * vec4(x, y, z, 1.0);						\n"
-		"}																				\n"
-		"																				\n"
-		"float getDensity(int x, int y, int z) {										\n"
-		"	return texelFetch(densities, x * dim * dim + y * dim + z).x;				\n"
-		"}																				\n"
-		"																				\n"
-		"void genSquare(int x, int y, int z, int a, int b, int c) {						\n"
-		"	gl_Position = transform(x, y, z);											\n"
-		"	fShade = getDensity(x, y, z);												\n"
-		"	EmitVertex();																\n"
-		"																				\n"
-		"	for (int i = 0; i < 3; i++) {												\n"
-		"		if (ivec3(a, b, c)[i] == 1) {											\n"
-		"			ivec3 add = ivec3(0);												\n"
-		"			add[i] = 1;															\n"
-		"																				\n"
-		"			gl_Position = transform(x + add.x, y + add.y, z + add.z);			\n"
-		"			fShade = getDensity(x + add.x, y + add.y, z + add.z);				\n"
-		"			EmitVertex();														\n"
-		"		}																		\n"
-		"	}																			\n"
-		"																				\n"
-		"	gl_Position = transform(x + a, y + b, z + c);								\n"
-		"	fShade = getDensity(x + a, y + b, z + c);									\n"
-		"	EmitVertex();																\n"
-		"																				\n"
-		"	EndPrimitive();																\n"
-		"}																				\n"
-		"																				\n"
-		"void main() {																	\n"
-		"	int x = int(gl_in[0].gl_Position.x);										\n"
-		"	int y = int(gl_in[0].gl_Position.y);										\n"
-		"	int z = int(gl_in[0].gl_Position.z);										\n"
-		"																				\n"
-		"	if (getDensity(x, y, z) < threshold) {										\n"
-		"		return;																	\n"
-		"	}																			\n"
-		"																				\n"
-		"	if (x != dim - 1 && y != dim - 1) {											\n"
-		"		genSquare(x, y, z, 1, 1, 0);											\n"
-		"	}																			\n"
-		"																				\n"
-		"	if (x != dim - 1 && z != dim - 1) {											\n"
-		"		genSquare(x, y, z, 1, 0, 1);											\n"
-		"	}																			\n"
-		"																				\n"
-		"	if (y != dim - 1 && z != dim - 1) {											\n"
-		"		genSquare(x, y, z, 0, 1, 1);											\n"
-		"	}																			\n"
-		"}																				\n";
+		"// GEOMETRY SHADER														\n"
+		"																		\n"
+		"#version 330 core														\n"
+		"																		\n"
+		"layout(points) in;														\n"
+		"layout(triangle_strip, max_vertices = 12) out;							\n"
+		"																		\n"
+		"out float fShade;														\n"
+		"																		\n"
+		"uniform mat4 projection;												\n"
+		"uniform mat4 view;														\n"
+		"uniform mat4 model;													\n"
+		"																		\n"
+		"uniform int dim;														\n"
+		"uniform float threshold;												\n"
+		"																		\n"
+		"uniform samplerBuffer densities;										\n"
+		"																		\n"
+		"vec4 transform(float x, float y, float z) {							\n"
+		"	return projection * view * model * vec4(x, y, z, 1.0);				\n"
+		"}																		\n"
+		"																		\n"
+		"float getDensity(int x, int y, int z) {								\n"
+		"	return texelFetch(densities, x * dim * dim + y * dim + z).x;		\n"
+		"}																		\n"
+		"																		\n"
+		"void genSquare(int x, int y, int z, int a, int b, int c) {				\n"
+		"	gl_Position = transform(x, y, z);									\n"
+		"	fShade = getDensity(x, y, z);										\n"
+		"	EmitVertex();														\n"
+		"																		\n"
+		"	for (int i = 0; i < 3; i++) {										\n"
+		"		if (ivec3(a, b, c)[i] == 1) {									\n"
+		"			ivec3 add = ivec3(0);										\n"
+		"			add[i] = 1;													\n"
+		"																		\n"
+		"			gl_Position = transform(x + add.x, y + add.y, z + add.z);	\n"
+		"			fShade = getDensity(x + add.x, y + add.y, z + add.z);		\n"
+		"			EmitVertex();												\n"
+		"		}																\n"
+		"	}																	\n"
+		"																		\n"
+		"	gl_Position = transform(x + a, y + b, z + c);						\n"
+		"	fShade = getDensity(x + a, y + b, z + c);							\n"
+		"	EmitVertex();														\n"
+		"																		\n"
+		"	EndPrimitive();														\n"
+		"}																		\n"
+		"																		\n"
+		"void main() {															\n"
+		"	int x = int(gl_in[0].gl_Position.x);								\n"
+		"	int y = int(gl_in[0].gl_Position.y);								\n"
+		"	int z = int(gl_in[0].gl_Position.z);								\n"
+		"																		\n"
+		"	if (getDensity(x, y, z) < threshold) {								\n"
+		"		return;															\n"
+		"	}																	\n"
+		"																		\n"
+		"	if (x != dim - 1 && y != dim - 1) {									\n"
+		"		genSquare(x, y, z, 1, 1, 0);									\n"
+		"	}																	\n"
+		"																		\n"
+		"	if (x != dim - 1 && z != dim - 1) {									\n"
+		"		genSquare(x, y, z, 1, 0, 1);									\n"
+		"	}																	\n"
+		"																		\n"
+		"	if (y != dim - 1 && z != dim - 1) {									\n"
+		"		genSquare(x, y, z, 0, 1, 1);									\n"
+		"	}																	\n"
+		"}																		\n";
 
 	std::string vLines =
 		"// VERTEX SHADER												\n"
@@ -330,6 +338,8 @@ void DensityMap::draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model) {
 	cellShader.setInt("dim", dim);
 	cellShader.setInt("densities", 0);
 	cellShader.setFloat("threshold", static_cast<float>(threshold) / 255);
+	cellShader.setFloat("brightness", brightness);
+	cellShader.setFloat("contrast", contrast);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_BUFFER, cellDensityBufferTexture);
@@ -352,14 +362,6 @@ void DensityMap::draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model) {
 	writeQueuesToGPU();
 }
 
-void DensityMap::setThreshold(unsigned char value) {
-	threshold = value;
-}
-
-unsigned char DensityMap::getThreshold() {
-	return threshold;
-}
-
 void DensityMap::writeLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals) {
 	std::lock_guard<std::mutex> lock(mutex);
 	lineQueue.push(Line(p1, p2, vals));
@@ -368,4 +370,28 @@ void DensityMap::writeLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char
 void DensityMap::writeCell(unsigned int x, unsigned int y, unsigned int z, unsigned char value) {
 	std::lock_guard<std::mutex> lock(mutex);
 	cellQueue.push(Cell(x, y, z, value));
+}
+
+void DensityMap::setThreshold(unsigned char value) {
+	threshold = value;
+}
+
+unsigned char DensityMap::getThreshold() {
+	return threshold;
+}
+
+void DensityMap::setBrightness(float value) {
+	brightness = value;
+}
+
+float DensityMap::getBrightness() {
+	return brightness;
+}
+
+void DensityMap::setContrast(float value) {
+	contrast = value;
+}
+
+float DensityMap::getContrast() {
+	return contrast;
 }

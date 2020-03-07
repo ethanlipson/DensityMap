@@ -66,8 +66,10 @@ private:
 	unsigned int lineVAO;
 	unsigned int lineVBO;
 
-	// Minimum value needed to draw a cell
+	// Values that determine how the image is drawn
 	unsigned char threshold;
+	float brightness;
+	float contrast;
 
 	// Creating the shaders for the cells in the cube
 	// and for the lines of the border of the cube
@@ -93,10 +95,18 @@ public:
 	// Adds a line of data between p1 and p2 to the lineQueue
 	void writeLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals);
 
+	// Writes to one cell of the density map
+	void writeCell(unsigned int x, unsigned int y, unsigned int z, unsigned char value);
+
 	// Set and get the threshold for drawing a cell
 	void setThreshold(unsigned char value);
 	unsigned char getThreshold();
 
-	// Writes to one cell of the density map
-	void writeCell(unsigned int x, unsigned int y, unsigned int z, unsigned char value);
+	// Set and get the image brightness
+	void setBrightness(float value);
+	float getBrightness();
+
+	// Set and get the image contrast
+	void setContrast(float value);
+	float getContrast();
 };
