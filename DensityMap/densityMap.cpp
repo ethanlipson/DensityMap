@@ -360,12 +360,12 @@ unsigned char DensityMap::getThreshold() {
 	return threshold;
 }
 
-void DensityMap::addLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals) {
+void DensityMap::writeLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals) {
 	std::lock_guard<std::mutex> lock(mutex);
 	lineQueue.push(Line(p1, p2, vals));
 }
 
-void DensityMap::write(unsigned int x, unsigned int y, unsigned int z, unsigned char value) {
+void DensityMap::writeCell(unsigned int x, unsigned int y, unsigned int z, unsigned char value) {
 	std::lock_guard<std::mutex> lock(mutex);
 	cellQueue.push(Cell(x, y, z, value));
 }

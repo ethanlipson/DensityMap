@@ -91,12 +91,12 @@ public:
 	void draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
 
 	// Adds a line of data between p1 and p2 to the lineQueue
-	void addLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals);
+	void writeLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals);
 
 	// Set and get the threshold for drawing a cell
 	void setThreshold(unsigned char value);
 	unsigned char getThreshold();
 
 	// Writes to one cell of the density map
-	void write(unsigned int x, unsigned int y, unsigned int z, unsigned char value);
+	void writeCell(unsigned int x, unsigned int y, unsigned int z, unsigned char value);
 };

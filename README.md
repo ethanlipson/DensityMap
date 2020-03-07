@@ -7,7 +7,7 @@ DensityMap is a class that stores a 3D array of unsigned bytes between 0 and 255
 <b>DensityMap(int dim)</b>  
 Initializes the DensityMap with a cubic array of side length dim.
 
-<b>void addLine(glm::vec3 p1, glm::vec3 p2, std::vector&lt;unsigned char&gt; vals)</b>  
+<b>void writeLine(glm::vec3 p1, glm::vec3 p2, std::vector&lt;unsigned char&gt; vals)</b>  
 Adds a line of data to the array along the line segment defined by p1 and p2.
 The more values there are in vals, the smoother the line will be.
 
@@ -24,7 +24,7 @@ Draws the density map and a white box around it to the screen.
 <b>unsigned char getThreshold()</b>  
 These set and get the minimum value needed to draw a cell. The fewer cells are drawn, the faster your program will run.
 
-<b>void write(unsigned int x, unsigned int y, unsigned int z, unsigned char value)</b>  
+<b>void writeCell(unsigned int x, unsigned int y, unsigned int z, unsigned char value)</b>  
 Writes to one cell of the buffer on the graphics card.
 
 ## Movement

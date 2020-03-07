@@ -278,7 +278,7 @@ void sphereDemo(DensityMap& grid) {
 				shade = shade * shade;
 
 				if (distance < radius * dim) {
-					grid.write(i, j, k, static_cast<unsigned char>(shade * 255));
+					grid.writeCell(i, j, k, static_cast<unsigned char>(shade * 255));
 				}
 			}
 		}
@@ -307,6 +307,6 @@ void fanDemo(DensityMap& grid) {
 			vals.push_back(255);
 		}
 
-		grid.addLine(vertex, vertex + glm::vec3(x, y, z), vals);
+		grid.writeLine(vertex, vertex + glm::vec3(x, y, z), vals);
 	}
 }
