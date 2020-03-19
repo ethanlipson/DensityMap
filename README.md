@@ -7,9 +7,13 @@ DensityMap is a class that stores a 3D array of unsigned bytes between 0 and 255
 <b>DensityMap(int dim)</b>  
 Initializes the DensityMap with a cubic array of side length dim.
 
-<b>void writeLine(glm::vec3 p1, glm::vec3 p2, std::vector&lt;unsigned char&gt; vals)</b>  
+<b>void writeLine(glm::vec3 p1, glm::vec3 p2, std::vector&lt;unsigned char&gt; vals, WriteMode writeMode = DensityMap::WriteMode::Avg)</b>  
 Adds a line of data to the array along the line segment defined by p1 and p2.
 The more values there are in vals, the smoother the line will be.
+
+Multiple data values can fall into the same cell (especially if there is a lot of data), so there are multiple ways to combine them.
+If writeMode is equal to DensityMap::WriteMode::Avg, then all values in the same cell will be averaged, and that value will be written to the cell.
+If writeMode is equal to DensityMap::WriteMode::Max, then the maximum of all the values in the cell will be written (this can be better if your data is sparse).
 
 <b>void clear(int value = 0)</b>  
 Fills the whole array with a given value. Defaults to 0.

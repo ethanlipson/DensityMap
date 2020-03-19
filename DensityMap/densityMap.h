@@ -13,6 +13,43 @@
 // Class that stores the density readings
 // and other related info
 class DensityMap {
+public:
+	// Enum for writeLine()
+	enum class WriteMode {
+		Max,
+		Avg
+	};
+
+	// Constructor
+	DensityMap(long long int dim);
+
+	// Overwrites everything with value
+	void clear(unsigned char value = 0);
+
+	// Returns dim
+	int getDim();
+
+	// Draws to the screen and optionally clears the screen
+	void draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
+
+	// Adds a line of data between p1 and p2 to the lineQueue
+	void writeLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals, WriteMode writeMode = WriteMode::Avg);
+
+	// Writes to one cell of the density map
+	void writeCell(unsigned int x, unsigned int y, unsigned int z, unsigned char value);
+
+	// Set and get the threshold for drawing a cell
+	void setThreshold(unsigned char value);
+	unsigned char getThreshold();
+
+	// Set and get the image brightness
+	void setBrightness(float value);
+	float getBrightness();
+
+	// Set and get the image contrast
+	void setContrast(float value);
+	float getContrast();
+
 private:
 	// Struct for storing data in the lineQueue
 	struct Line {
@@ -21,10 +58,13 @@ private:
 
 		std::vector<unsigned char> vals;
 
-		Line(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals) {
+		WriteMode writeMode;
+
+		Line(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals, WriteMode writeMode) {
 			this->p1 = p1;
 			this->p2 = p2;
 			this->vals = vals;
+			this->writeMode = writeMode;
 		}
 	};
 
@@ -78,35 +118,4 @@ private:
 
 	// Writes cells and lines in both queues to the GPU
 	void writeQueuesToGPU();
-
-public:
-	// Constructor
-	DensityMap(long long int dim);
-
-	// Overwrites everything with value
-	void clear(unsigned char value = 0);
-
-	// Returns dim
-	int getDim();
-
-	// Draws to the screen and optionally clears the screen
-	void draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model);
-
-	// Adds a line of data between p1 and p2 to the lineQueue
-	void writeLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals);
-
-	// Writes to one cell of the density map
-	void writeCell(unsigned int x, unsigned int y, unsigned int z, unsigned char value);
-
-	// Set and get the threshold for drawing a cell
-	void setThreshold(unsigned char value);
-	unsigned char getThreshold();
-
-	// Set and get the image brightness
-	void setBrightness(float value);
-	float getBrightness();
-
-	// Set and get the image contrast
-	void setContrast(float value);
-	float getContrast();
 };

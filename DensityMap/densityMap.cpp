@@ -181,7 +181,7 @@ DensityMap::DensityMap(long long int dim) {
 	delete[] tempCells;
 
 	glBindBuffer(GL_TEXTURE_BUFFER, cellDensityTBO);
-	cells = (unsigned char*)glMapBuffer(GL_TEXTURE_BUFFER, GL_WRITE_ONLY);
+	cells = (unsigned char*)glMapBuffer(GL_TEXTURE_BUFFER, GL_READ_WRITE);
 
 	// ------------------
 	// Array containing the coordinates of the vertices
@@ -249,6 +249,7 @@ void DensityMap::writeQueuesToGPU() {
 		glm::vec3 p1 = line.p1;
 		glm::vec3 p2 = line.p2;
 		std::vector<unsigned char> vals = line.vals;
+		WriteMode writeMode = line.writeMode;
 
 		int numVals = vals.size();
 
@@ -281,12 +282,28 @@ void DensityMap::writeQueuesToGPU() {
 			int iz = z * (dim - 1);
 
 			// Get the next value from the vals array
-			newValue += vals[i];
-			numNewValues++;
+			switch (writeMode) {
+			case WriteMode::Avg:
+				newValue += vals[i];
+				numNewValues++;
+				break;
+			case WriteMode::Max:
+				if (vals[i] > newValue) {
+					newValue = vals[i];
+				}
+				break;
+			}
 
 			if (ix != px || iy != py || iz != pz) {
 				// Write the new value to the array
-				cells[ix * dim * dim + iy * dim + iz] = static_cast<unsigned char>(newValue / numNewValues);
+				switch (writeMode) {
+				case WriteMode::Avg:
+					cells[ix * dim * dim + iy * dim + iz] = static_cast<unsigned char>(newValue / numNewValues);
+					break;
+				case WriteMode::Max:
+					cells[ix * dim * dim + iy * dim + iz] = static_cast<unsigned char>(newValue);
+					break;
+				}
 
 				// Reset these values (since we are in a new cell now)
 				newValue = 0;
@@ -362,9 +379,9 @@ void DensityMap::draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model) {
 	writeQueuesToGPU();
 }
 
-void DensityMap::writeLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals) {
+void DensityMap::writeLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals, WriteMode writeMode) {
 	std::lock_guard<std::mutex> lock(mutex);
-	lineQueue.push(Line(p1, p2, vals));
+	lineQueue.push(Line(p1, p2, vals, writeMode));
 }
 
 void DensityMap::writeCell(unsigned int x, unsigned int y, unsigned int z, unsigned char value) {
