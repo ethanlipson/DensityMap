@@ -50,6 +50,10 @@ public:
 	void setContrast(float value);
 	float getContrast();
 
+	// Set and get the update coefficient used in writeLine()
+	void setUpdateCoefficient(float value);
+	float getUpdateCoefficient();
+
 private:
 	// Struct for storing data in the lineQueue
 	struct Line {
@@ -110,6 +114,9 @@ private:
 	unsigned char threshold;
 	float brightness;
 	float contrast;
+
+	// The weight for the weighted average taken in writeLine()
+	float updateCoefficient;
 
 	// Creating the shaders for the cells in the cube
 	// and for the lines of the border of the cube

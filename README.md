@@ -11,8 +11,8 @@ Initializes the DensityMap with a cubic array of side length dim.
 Fills the whole array with a given value. Defaults to 0.
 
 <b>void writeLine(glm::vec3 p1, glm::vec3 p2, std::vector&lt;unsigned char&gt; vals, WriteMode writeMode = DensityMap::WriteMode::Avg)</b>  
-Adds a line of data to the array along the line segment defined by p1 and p2.
-The more values there are in vals, the smoother the line will be.
+Adds a line of data to the array along the line segment defined by p1 and p2. The more values there are in vals, the smoother the line will be.  
+The value written to the cell will be the weighted average of the new and old value. The coefficient used in this formula is determined by setUpdateCoefficient().
 
 <b>void writeCell(unsigned int x, unsigned int y, unsigned int z, unsigned char value)</b>  
 Writes to one cell of the buffer on the graphics card.
@@ -30,6 +30,11 @@ Draws the density map and a white box around it to the screen.
 <b>void setThreshold(unsigned char value)</b>  
 <b>unsigned char getThreshold()</b>  
 These set and get the minimum value needed to draw a cell. The fewer cells are drawn, the faster your program will run.
+
+<b>void setUpdateCoefficient(float value)</b>  
+<b>float getUpdateCoefficient()</b>  
+These set and get the update coefficient used for the weighted average in writeLine().  
+If it is 1, then the new value completely overwrites the old value. If it is 0.5, then the mean of the new and old values is taken. If it is 0, then writing new values has no effect (not recommended for obvious reasons).
 
 <b>void setBrightness(float value)</b>  
 <b>float getBrightness()</b>  

@@ -104,18 +104,22 @@ int main() {
 	int dim = 100;
 	DensityMap grid(dim);
 
-	// Add a sphere to the center of the grid
-	contrastBrightnessDemo(grid);
-
 	// Add all non-empty cells to the map
 	grid.setThreshold(1);
-	grid.setContrast(0.25);
 
 	// Main event loop
 	while (!glfwWindowShouldClose(window)) {
 		double currentFrame = glfwGetTime();
 		cam.deltaTime = currentFrame - cam.lastFrame;
 		cam.lastFrame = currentFrame;
+
+		glm::vec3 p1 = { float(rand()) / RAND_MAX, float(rand()) / RAND_MAX, float(rand()) / RAND_MAX };
+		glm::vec3 p2 = { float(rand()) / RAND_MAX, float(rand()) / RAND_MAX, float(rand()) / RAND_MAX };
+		std::vector<unsigned char> values;
+		for (int i = 0; i < 100; i++) {
+			values.push_back(255);
+		}
+		grid.writeLine(p1, p2, values);
 
 		// Self-explanatory
 		processKeyboardInput(window);

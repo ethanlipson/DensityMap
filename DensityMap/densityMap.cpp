@@ -6,6 +6,7 @@ DensityMap::DensityMap(long long int dim) {
 	threshold = 0;
 	brightness = 0;
 	contrast = 1;
+	updateCoefficient = 1;
 
 	std::string vCells =
 		"// VERTEX SHADER						\n"
@@ -295,14 +296,24 @@ void DensityMap::writeQueuesToGPU() {
 			}
 
 			if (ix != px || iy != py || iz != pz) {
+				unsigned char value;
+
 				// Write the new value to the array
 				switch (writeMode) {
 				case WriteMode::Avg:
-					cells[ix * dim * dim + iy * dim + iz] = static_cast<unsigned char>(newValue / numNewValues);
+					value = static_cast<unsigned char>(newValue / numNewValues);
 					break;
 				case WriteMode::Max:
-					cells[ix * dim * dim + iy * dim + iz] = static_cast<unsigned char>(newValue);
+					value = static_cast<unsigned char>(newValue);
 					break;
+				}
+
+				unsigned char currentValue = cells[ix * dim * dim + iy * dim + iz];
+				if (currentValue == 0) {
+					cells[ix * dim * dim + iy * dim + iz] = value;
+				}
+				else {
+					cells[ix * dim * dim + iy * dim + iz] = updateCoefficient * value + (1 - updateCoefficient) * currentValue;
 				}
 
 				// Reset these values (since we are in a new cell now)
@@ -411,4 +422,12 @@ void DensityMap::setContrast(float value) {
 
 float DensityMap::getContrast() {
 	return contrast;
+}
+
+void DensityMap::setUpdateCoefficient(float value) {
+	updateCoefficient = value;
+}
+
+float DensityMap::getUpdateCoefficient() {
+	return updateCoefficient;
 }
