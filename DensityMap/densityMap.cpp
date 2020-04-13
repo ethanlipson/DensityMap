@@ -226,26 +226,26 @@ void DensityMap::clear(unsigned char value) {
 	// Fills the whole array with value
 	// Defaults to zero
 
-	std::lock_guard<std::mutex> lock(mutex);
+	std::lock_guard<std::mutex> writeLock(writeMutex);
 
 	for (int i = 0; i < dim; i++) {
 		for (int j = 0; j < dim; j++) {
 			for (int k = 0; k < dim; k++) {
-				cellQueue.push(Cell(i, j, k, value));
+				cellWriteQueue.push(CellWrite(i, j, k, value));
 			}
 		}
 	}
 }
 
-void DensityMap::writeQueuesToGPU() {
+void DensityMap::resolveQueues() {
 	// Keeps the queues thread-safe
-	std::lock_guard<std::mutex> lock(mutex);
+	std::lock_guard<std::mutex> writeLock(writeMutex);
 
-	int lineQueueSize = lineQueue.size();
-	for (int l = 0; l < lineQueueSize; l++) {
+	int lineWriteQueueSize = lineWriteQueue.size();
+	for (int l = 0; l < lineWriteQueueSize; l++) {
 		// Getting the line from the front of the queue
-		Line line = lineQueue.front();
-		lineQueue.pop();
+		LineWrite line = lineWriteQueue.front();
+		lineWriteQueue.pop();
 
 		glm::vec3 p1 = line.p1;
 		glm::vec3 p2 = line.p2;
@@ -333,11 +333,11 @@ void DensityMap::writeQueuesToGPU() {
 		}
 	}
 
-	int cellQueueSize = cellQueue.size();
-	for (int c = 0; c < cellQueueSize; c++) {
+	int cellWriteQueueSize = cellWriteQueue.size();
+	for (int c = 0; c < cellWriteQueueSize; c++) {
 		// Getting the cell from the front of the queue
-		Cell cell = cellQueue.front();
-		cellQueue.pop();
+		CellWrite cell = cellWriteQueue.front();
+		cellWriteQueue.pop();
 
 		cells[cell.x * dim * dim + cell.y * dim + cell.z] = cell.value;
 	}
@@ -351,53 +351,58 @@ int DensityMap::getDim() {
 }
 
 void DensityMap::draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model) {
-	glBindBuffer(GL_TEXTURE_BUFFER, cellDensityTBO);
-	glUnmapBuffer(GL_TEXTURE_BUFFER);
+	// Special scope for the read lock guard
+	{
+		std::lock_guard<std::mutex> readLock(readMutex);
 
-	// Needed to standardize the size of the grid
-	glm::mat4 _model = glm::scale<float>(glm::mat4(1.0), glm::vec3(10.0 / (dim - 1), 10.0 / (dim - 1), 10.0 / (dim - 1)));
-	_model = glm::translate<float>(_model, glm::vec3(-(dim - 1) / 2.0, -(dim - 1) / 2.0, -(dim - 1) / 2.0));
+		glBindBuffer(GL_TEXTURE_BUFFER, cellDensityTBO);
+		glUnmapBuffer(GL_TEXTURE_BUFFER);
 
-	// Drawing the volume map
-	cellShader.use();
-	cellShader.setMat4("projection", projection);
-	cellShader.setMat4("view", view);
-	cellShader.setMat4("model", model * _model);
-	cellShader.setInt("dim", dim);
-	cellShader.setInt("densities", 0);
-	cellShader.setFloat("threshold", static_cast<float>(threshold) / 255);
-	cellShader.setFloat("brightness", brightness);
-	cellShader.setFloat("contrast", contrast);
+		// Needed to standardize the size of the grid
+		glm::mat4 _model = glm::scale<float>(glm::mat4(1.0), glm::vec3(10.0 / (dim - 1), 10.0 / (dim - 1), 10.0 / (dim - 1)));
+		_model = glm::translate<float>(_model, glm::vec3(-(dim - 1) / 2.0, -(dim - 1) / 2.0, -(dim - 1) / 2.0));
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_BUFFER, cellDensityBufferTexture);
-	glTexBuffer(GL_TEXTURE_BUFFER, GL_R8, cellDensityTBO);
+		// Drawing the volume map
+		cellShader.use();
+		cellShader.setMat4("projection", projection);
+		cellShader.setMat4("view", view);
+		cellShader.setMat4("model", model * _model);
+		cellShader.setInt("dim", dim);
+		cellShader.setInt("densities", 0);
+		cellShader.setFloat("threshold", static_cast<float>(threshold) / 255);
+		cellShader.setFloat("brightness", brightness);
+		cellShader.setFloat("contrast", contrast);
 
-	glBindVertexArray(cellVAO);
-	glDrawArrays(GL_POINTS, 0, dim * dim * dim);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_BUFFER, cellDensityBufferTexture);
+		glTexBuffer(GL_TEXTURE_BUFFER, GL_R8, cellDensityTBO);
 
-	// Drawing the white lines
-	lineShader.use();
-	lineShader.setMat4("projection", projection);
-	lineShader.setMat4("view", view);
-	lineShader.setMat4("model", model);
+		glBindVertexArray(cellVAO);
+		glDrawArrays(GL_POINTS, 0, dim * dim * dim);
 
-	glBindVertexArray(lineVAO);
-	glDrawArrays(GL_LINES, 0, 24);
+		// Drawing the white lines
+		lineShader.use();
+		lineShader.setMat4("projection", projection);
+		lineShader.setMat4("view", view);
+		lineShader.setMat4("model", model);
 
-	cells = (unsigned char*)glMapBuffer(GL_TEXTURE_BUFFER, GL_WRITE_ONLY);
+		glBindVertexArray(lineVAO);
+		glDrawArrays(GL_LINES, 0, 24);
 
-	writeQueuesToGPU();
+		cells = (unsigned char*)glMapBuffer(GL_TEXTURE_BUFFER, GL_WRITE_ONLY);
+	}
+
+	resolveQueues();
 }
 
 void DensityMap::writeLine(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals, WriteMode writeMode) {
-	std::lock_guard<std::mutex> lock(mutex);
-	lineQueue.push(Line(p1, p2, vals, writeMode));
+	std::lock_guard<std::mutex> writeLock(writeMutex);
+	lineWriteQueue.push(LineWrite(p1, p2, vals, writeMode));
 }
 
 void DensityMap::writeCell(unsigned int x, unsigned int y, unsigned int z, unsigned char value) {
-	std::lock_guard<std::mutex> lock(mutex);
-	cellQueue.push(Cell(x, y, z, value));
+	std::lock_guard<std::mutex> writeLock(writeMutex);
+	cellWriteQueue.push(CellWrite(x, y, z, value));
 }
 
 void DensityMap::setThreshold(unsigned char value) {
@@ -430,4 +435,49 @@ void DensityMap::setUpdateCoefficient(float value) {
 
 float DensityMap::getUpdateCoefficient() {
 	return updateCoefficient;
+}
+
+unsigned char DensityMap::readCell(int x, int y, int z) {
+	std::lock_guard<std::mutex> readLock(readMutex);
+	return getCell(x, y, z);
+}
+
+unsigned char DensityMap::readCellInterpolated(float x, float y, float z) {
+	std::lock_guard<std::mutex> readLock(readMutex);
+
+	// Trilinear interpolation algorithm
+	// Denormalized coordinates
+	glm::ivec3 dn = { x * dim, y * dim, z * dim };
+	float xd = x * dim - float(dn.x);
+	float yd = y * dim - float(dn.y);
+	float zd = z * dim - float(dn.z);
+
+	float c000 = getCell(dn.x, dn.y, dn.z);
+	float c001 = getCell(dn.x, dn.y, dn.z + 1);
+	float c010 = getCell(dn.x, dn.y + 1, dn.z);
+	float c011 = getCell(dn.x, dn.y + 1, dn.z + 1);
+	float c100 = getCell(dn.x + 1, dn.y, dn.z);
+	float c101 = getCell(dn.x + 1, dn.y, dn.z + 1);
+	float c110 = getCell(dn.x + 1, dn.y + 1, dn.z);
+	float c111 = getCell(dn.x + 1, dn.y + 1, dn.z + 1);
+
+	float c00 = c000 * (1 - xd) + c100 * xd;
+	float c01 = c001 * (1 - xd) + c101 * xd;
+	float c10 = c010 * (1 - xd) + c110 * xd;
+	float c11 = c011 * (1 - xd) + c111 * xd;
+
+	float c0 = c00 * (1 - yd) + c10 * yd;
+	float c1 = c01 * (1 - yd) + c11 * yd;
+
+	float c = c0 * (1 - zd) + c1 * zd;
+
+	return c;
+}
+
+void DensityMap::readLine(float x, float, float z, int numVals, unsigned char* vals) {
+
+}
+
+unsigned char DensityMap::getCell(int x, int y, int z) {
+	return cells[x * dim * dim + y * dim + z];
 }

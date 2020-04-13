@@ -41,6 +41,13 @@ If it is 1, then the new value completely overwrites the old value. If it is 0.5
 <b>void setContrast(float value)</b>  
 <b>float getContrast()</b>  
 
+<b>unsigned char readCell(int x, int y, int z)</b>  
+Gets the value at a specific index in the array. Blocks when drawing is happening.
+
+<b>unsigned char readCellInterpolated(float x, float y, float z)</b>  
+Gets the interpolated value at a position in the cube. Blocks when drawing is happening.  
+x, y, and z must all be on the half-open range [0, 1)
+
 These set and get the image brightness and contrast.  
 After the cell shades are mapped onto the closed interval [0, 1], the following formula is applied:
 

@@ -38,6 +38,17 @@ public:
 	// Writes to one cell of the density map
 	void writeCell(unsigned int x, unsigned int y, unsigned int z, unsigned char value);
 
+	// Gets the value at a specific index in the array and writes it to val
+	unsigned char readCell(int x, int y, int z);
+
+	// Returns the value at a specific position in the array (interpolated)
+	// x, y, and z must all be on the half-open range [0, 1)
+	unsigned char readCellInterpolated(float x, float y, float z);
+
+	// Gets the values along the line between two points and writes them to a given array
+	// using readCellInterpolated() several times
+	void readLine(float x, float, float z, int numVals, unsigned char* vals);
+
 	// Set and get the threshold for drawing a cell
 	void setThreshold(unsigned char value);
 	unsigned char getThreshold();
@@ -55,8 +66,8 @@ public:
 	float getUpdateCoefficient();
 
 private:
-	// Struct for storing data in the lineQueue
-	struct Line {
+	// Structs for writing data
+	struct LineWrite {
 		glm::vec3 p1;
 		glm::vec3 p2;
 
@@ -64,7 +75,7 @@ private:
 
 		WriteMode writeMode;
 
-		Line(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals, WriteMode writeMode) {
+		LineWrite(glm::vec3 p1, glm::vec3 p2, std::vector<unsigned char> vals, WriteMode writeMode) {
 			this->p1 = p1;
 			this->p2 = p2;
 			this->vals = vals;
@@ -72,14 +83,14 @@ private:
 		}
 	};
 
-	struct Cell {
+	struct CellWrite {
 		unsigned int x;
 		unsigned int y;
 		unsigned int z;
 
 		unsigned char value;
 
-		Cell(unsigned int x, unsigned int y, unsigned int z, unsigned char value) {
+		CellWrite(unsigned int x, unsigned int y, unsigned int z, unsigned char value) {
 			this->x = x;
 			this->y = y;
 			this->z = z;
@@ -87,14 +98,13 @@ private:
 		}
 	};
 
-	// Queue for storing lines queued by addLine()
-	std::queue<Line> lineQueue;
-
-	// Queue for storing cells queued by write()
-	std::queue<Cell> cellQueue;
+	// Queues for storing write requests
+	std::queue<LineWrite> lineWriteQueue;
+	std::queue<CellWrite> cellWriteQueue;
 
 	// Necessary for thread-safety
-	std::mutex mutex;
+	std::mutex writeMutex;
+	std::mutex readMutex;
 
 	// Pointer to the cells on the graphics card
 	unsigned char* cells;
@@ -123,6 +133,9 @@ private:
 	Shader cellShader;
 	Shader lineShader;
 
-	// Writes cells and lines in both queues to the GPU
-	void writeQueuesToGPU();
+	// Resolves all write requests in the queues
+	void resolveQueues();
+
+	// Gets the value of a specific cell in the array
+	unsigned char getCell(int x, int y, int z);
 };
