@@ -474,8 +474,26 @@ unsigned char DensityMap::readCellInterpolated(float x, float y, float z) {
 	return c;
 }
 
-void DensityMap::readLine(float x, float, float z, int numVals, unsigned char* vals) {
+void DensityMap::readLine(glm::vec3 p1, glm::vec3 p2, int numVals, unsigned char* vals) {
+	// x, y, and z coordinates of the current data point
+	// Moves along the line defined by p1 and p2
+	float x = p1.x;
+	float y = p1.y;
+	float z = p1.z;
 
+	// Direction of the line defined by p1 and p2
+	float dx = (p2.x - p1.x) / numVals;
+	float dy = (p2.y - p1.y) / numVals;
+	float dz = (p2.z - p1.z) / numVals;
+
+	for (int i = 0; i < numVals; i++) {
+		vals[i] = readCellInterpolated(x, y, z);;
+
+		// Move x, y, and z along the line
+		x += dx;
+		y += dy;
+		z += dz;
+	}
 }
 
 unsigned char DensityMap::getCell(int x, int y, int z) {

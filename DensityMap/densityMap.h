@@ -47,7 +47,7 @@ public:
 
 	// Gets the values along the line between two points and writes them to a given array
 	// using readCellInterpolated() several times
-	void readLine(float x, float, float z, int numVals, unsigned char* vals);
+	void readLine(glm::vec3 p1, glm::vec3 p2, int numVals, unsigned char* vals);
 
 	// Set and get the threshold for drawing a cell
 	void setThreshold(unsigned char value);

@@ -24,7 +24,7 @@ If writeMode is equal to DensityMap::WriteMode::Max, then the maximum of all the
 <b>int getDim()</b>  
 Returns the side length of the cube.
 
-<b>void draw(glm::dmat4 projection, glm::dmat4 view, glm::dmat4 model)</b>  
+<b>void draw(glm::mat4 projection, glm::mat4 view, glm::mat4 model)</b>  
 Draws the density map and a white box around it to the screen.
 
 <b>void setThreshold(unsigned char value)</b>  
@@ -57,6 +57,10 @@ Gets the value at a specific index in the array. Blocks when drawing is happenin
 <b>unsigned char readCellInterpolated(float x, float y, float z)</b>  
 Gets the interpolated value at a position in the cube. Blocks when drawing is happening.  
 x, y, and z must all be on the half-open range [0, 1)
+
+<b>void readLine(glm::vec3 p1, glm::vec3 p2, int numVals, unsigned char* vals)</b>  
+Gets the interpolated values along the line between two points and writes them to a given array.  
+Make suree at least `numVals` bytes of memory are allocated for `vals`.
 
 ## Movement
 
