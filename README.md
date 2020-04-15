@@ -60,7 +60,7 @@ x, y, and z must all be on the half-open range [0, 1)
 
 <b>void readLine(glm::vec3 p1, glm::vec3 p2, int numVals, unsigned char* vals)</b>  
 Gets the interpolated values along the line between two points and writes them to a given array.  
-Make suree at least `numVals` bytes of memory are allocated for `vals`.
+Make sure at least `numVals` bytes of memory are allocated for `vals`.
 
 ## Movement
 
