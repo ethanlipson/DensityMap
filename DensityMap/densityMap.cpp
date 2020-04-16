@@ -36,7 +36,6 @@ DensityMap::DensityMap(long long int dim) {
 		"uniform float contrast;										\n"
 		"																\n"
 		"void main() {													\n"
-		"																\n"
 		"	float shade = contrast * (fShade - 0.5) + 0.5 + brightness;	\n"
 		"	shade = shade * shade * shade * shade * shade;				\n"
 		"	shade = clamp(shade, 0.003, 1.0);							\n"
