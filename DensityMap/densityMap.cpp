@@ -486,7 +486,7 @@ void DensityMap::readLine(glm::vec3 p1, glm::vec3 p2, int numVals, unsigned char
 	float dz = (p2.z - p1.z) / numVals;
 
 	for (int i = 0; i < numVals; i++) {
-		vals[i] = readCellInterpolated(x, y, z);;
+		vals[i] = readCellInterpolated(x, y, z);
 
 		// Move x, y, and z along the line
 		x += dx;
