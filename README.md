@@ -1,6 +1,6 @@
 # DensityMap
 
-DensityMap is a class that stores a 3D array of unsigned bytes between 0 and 255 (inclusive) and allows them to be displayed using OpenGL.
+DensityMap is a class that stores a 3D array of unsigned bytes between 0 and 255 (inclusive) and allows them to be displayed using OpenGL. It was developed for the Columbia Open Source Ultrasound Project, which aims to create affordable ultrasound for families across the globe. Specifically, this library was used to display ultrasound data collected in real time at a high resolution.
 
 ## Methods
 
